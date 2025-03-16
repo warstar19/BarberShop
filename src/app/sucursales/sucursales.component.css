@@ -1,0 +1,19 @@
+.contenedor-sucursales {
+  padding: 20px;
+  text-align: center; /* Centra el contenido horizontalmente */
+}
+
+select {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc; /* Borde gris claro */
+  border-radius: 4px; /* Bordes redondeados */
+  margin-top: 10px;
+  width: 250px; /* Ancho del selectbox */
+}
+
+select:focus {
+  outline: none; /* Elimina el borde de enfoque predeterminado */
+  border-color: #007bff; /* Cambia el color del borde al enfocar */
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Agrega una sombra al enfocar */
+}

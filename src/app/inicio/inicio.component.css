@@ -1,0 +1,16 @@
+.contenedor-inicio {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  padding: 20px;
+}
+
+.columna-informacion {
+  padding-right: 20px;
+}
+
+.columna-imagen img {
+  width: 100%;
+  height: auto;
+  display: block;
+}

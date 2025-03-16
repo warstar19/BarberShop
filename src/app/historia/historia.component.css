@@ -1,0 +1,19 @@
+.contenedor-historia {
+  padding: 20px;
+  text-align: center;
+}
+
+.seccion-texto {
+  margin-bottom: 20px;
+}
+
+.seccion-imagen {
+  margin-bottom: 30px;
+}
+
+.seccion-imagen img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
