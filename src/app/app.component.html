@@ -1,33 +1,40 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow">
   <div class="container-fluid">
-    <a class="navbar-brand" href="#">Barbería</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <a class="navbar-brand fw-bold" href="#">Mens BarberShop</a>
+    
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
+
     <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav">
+      <ul class="navbar-nav mx-auto">
         <li class="nav-item">
-          <a class="nav-link" [routerLink]="'/inicio'" aria-current="page">Inicio</a>
+          <a class="nav-link" [routerLink]="'/inicio'" routerLinkActive="active">Inicio</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" [routerLink]="'/historia'">Historia</a>
+          <a class="nav-link" [routerLink]="'/historia'" routerLinkActive="active">Historia</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" [routerLink]="'/barberos'">Barberos</a>
+          <a class="nav-link" [routerLink]="'/barberos'" routerLinkActive="active">Barberos</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" [routerLink]="'/sucursales'">Sucursales</a>
+          <a class="nav-link" [routerLink]="'/sucursales'" routerLinkActive="active">Sucursales</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" [routerLink]="'/contacto'">Contacto</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" [routerLink]="'/barbero-online'" id="barberoOnline">Barbero Online</a>
+          <a class="nav-link" [routerLink]="'/contacto'" routerLinkActive="active">Contacto</a>
         </li>
       </ul>
+      
+      <a class="btn btn-primary px-3 d-flex align-items-center" [routerLink]="'/barbero-online'" id="barberoOnline">
+        <img src="../assets/icons/barberia.png" width="24" height="24" class="me-2">
+        Barbero Online
+      </a>
+      
     </div>
   </div>
 </nav>
 
 <router-outlet></router-outlet>
+
 
