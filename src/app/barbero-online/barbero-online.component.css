@@ -1,44 +1,82 @@
-.login-container {
-  width: 300px;
-  margin: 0 auto;
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
 
-.form-group {
-  margin-bottom: 15px;
-}
+/* Fondo de la página */
+body {
+  opacity: 0.9;
+  }
 
-label {
-  display: block;
-  margin-bottom: 5px;
-}
+  /* Estructura de la tarjeta */
+  .card {
+    display: flex;
+    flex-direction: column;
+    max-width: 1000px;
+    width: 100%;
+    border-radius: 15px;
+  }
 
-input[type="text"],
-input[type="password"] {
-  width: 100%;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 3px;
-}
+  .card-body {
+    padding: 2rem;
+    background: rgba(0, 0, 0, 0.4); /* Fondo oscuro dentro de la card */
+    color: #fdfdfd; /* Color de texto blanco */
+    flex: 1;
+    border-radius: 15px;
+  }
 
-button {
-  width: 100%;
-  padding: 10px;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 3px;
-  cursor: pointer;
-}
+  /* Imagen dentro de la tarjeta */
+  .card-img {
+    background-color: #fdfdfd;
+    border-radius: 0 15px 15px 0;
+    overflow: hidden;
+  }
 
-.options {
-  margin-top: 15px;
-  text-align: center;
-}
+  .card-img img {
+    object-fit: cover;
+    height: 100%;
+  }
 
-.options a {
-  margin: 0 10px;
-  text-decoration: none;
-}
+  /* En dispositivos grandes, poner la imagen al lado del formulario */
+  @media (min-width: 768px) {
+    .card-body {
+      order: 1;
+    }
+
+    .card-img {
+      order: 2;
+    }
+  }
+
+  /* Ajustes para pantallas pequeñas */
+  @media (max-width: 767px) {
+    .card-body {
+      order: 1;
+    }
+
+    .card-img {
+      order: 3;
+      height: 300px;
+    }
+  }
+  .fade-in {
+    animation: fadeIn 0.5s ease-in;
+  }
+
+  .fade-out {
+    animation: fadeOut 0.5s ease-in;
+  }
+
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes fadeOut {
+    0% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }

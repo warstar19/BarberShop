@@ -1,68 +1,24 @@
-<h2 class="text-center font-weight-bold text-warning">
+<br>
+<h1 class="text-center mb-4" style="color: #ffc107;">
   ¡Conocé nuestra historia!
-</h2>
-
-<div class="container py-5 ">
-  <!-- Sección de Introducción a la Historia -->
-  <div class="row align-items-center mb-4 ">
-    <div class="col-lg-6 bg-dark">
-      <h2 class="display-4 text-warning mb-4">Nuestra Historia</h2>
-      <p class=" text-warning lead">
-        En el corazón de la ciudad, nuestra barbería nació con el propósito de
-        ofrecer un espacio donde cada corte de cabello sea una experiencia
-        única. Desde nuestros humildes comienzos hasta convertirnos en un lugar
-        de referencia, nuestra pasión por el buen servicio y la atención al
-        detalle siempre ha sido nuestra guía.
-      </p>
-    </div>
-    <div class="col-lg-6">
-      <img
-        src="assets/img/historia1.jpg"
-        alt="Imagen histórica de la barbería"
-        class="img-fluid rounded-3 shadow-lg"
-      />
-    </div>
-  </div>
-
-  <!-- Sección de Evolución de la Barbería -->
-  <div class="row align-items-center mb-4">
-    <div class="col-lg-6 order-lg-2 bg-dark">
-      <h3 class="text-warning mb-3">Evolución de la Barbería</h3>
+</h1>
+<div class="container py-5 contenedor-historia">
+  <div *ngFor="let section of historia; let i = index" class="row align-items-center mb-4 fadeInText">
+    <!-- Sección de texto y sección de imagen intercaladas -->
+    <div [class.order-1]="i % 2 === 0" [class.order-2]="i % 2 !== 0" class="col-lg-6" [ngClass]="{'bg-dark': section.bgColor}">
+      <h2 class="display-4 text-warning mb-4">{{ section.titulo }}</h2>
       <p class="text-warning lead">
-        A lo largo de los años, hemos evolucionado, pero nuestros valores
-        fundamentales nunca han cambiado. Hemos adaptado nuestros servicios para
-        satisfacer las necesidades de los tiempos modernos sin perder el toque
-        tradicional que nos distingue. Desde los primeros barberos hasta el
-        equipo actual, hemos cultivado una comunidad de clientes leales que nos
-        han ayudado a crecer.
+        {{ section.descripcion }}
       </p>
     </div>
-    <div class="col-lg-6 order-lg-1">
-      <img
-        src="assets/img/historia2.png"
-        alt="Imagen del equipo actual de la barbería"
-        class="img-fluid rounded-3 shadow-lg"
-      />
-    </div>
-  </div>
 
-  <!-- Sección de Misión y Futuro -->
-  <div class="row align-items-center">
-    <div class="col-lg-6 bg-dark">
-      <h3 class="text-warning mb-3">Nuestra Misión y Futuro</h3>
-      <p class="text-warning lead">
-        Hoy en día, no solo ofrecemos cortes de cabello, sino que creamos una
-        atmósfera relajante y amigable, en la que cada cliente se siente como en
-        casa. Nuestra misión es continuar brindando servicios de la más alta
-        calidad y seguir creciendo, mientras mantenemos el compromiso con la
-        tradición, la calidad y la innovación.
-      </p>
-    </div>
-    <div class="col-lg-6">
+    <div [class.order-1]="i % 2 !== 0" [class.order-2]="i % 2 === 0" class="col-lg-6">
       <img
-        src="assets/img/historia3.jpg"
-        alt="Imagen de la barbería actual"
+        *ngIf="section.imagen"
+        [src]="section.imagen"
+        alt="{{ section.alt }}"
         class="img-fluid rounded-3 shadow-lg"
+        style="height: 250px; object-fit: cover;"
       />
     </div>
   </div>

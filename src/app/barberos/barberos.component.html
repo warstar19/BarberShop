@@ -1,47 +1,18 @@
 <div class="container text-center py-5">
   <h2 class="text-warning display-4 mb-5">Nuestro Equipo</h2>
   <div class="row">
-    <!-- Barbero 1 -->
-    <div class="col-md-4">
-      <div class="card border-0 bg-dark">
+    <!-- Iterar sobre los barberos -->
+    <div *ngFor="let barbero of barberos" class="col-md-4 mb-4 fade-in">
+      <div class="card border-0 bg-dark rounded-4 shadow-lg">
         <img
-          src="../../assets/img/john-pena.jpg"
+          [src]="barbero.imagen"
           class="card-img-top rounded-circle shadow-lg"
-          alt="John Peña"
+          [alt]="barbero.nombre"
+          style="height: 250px; object-fit: cover;"
         />
         <div class="card-body">
-          <h4 class="text-warning">John Peña</h4>
-          <p class="text-warning">Especialista en cortes clásicos y afeitados.</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Barbero 2 -->
-    <div class="col-md-4">
-      <div class="card border-0 bg-dark">
-        <img
-          src="../../assets/img/carlos-batres.jpg"
-          class="card-img-top rounded-circle shadow-lg"
-          alt="Carlos Batres"
-        />
-        <div class="card-body">
-          <h4 class="text-warning">Carlos Batres</h4>
-          <p class="text-warning">Experto en estilos modernos y degradados.</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Barbero 3 -->
-    <div class="col-md-4">
-      <div class="card border-0 bg-dark">
-        <img
-          src="../../assets/img/ricardo-lens.jpg"
-          class="card-img-top rounded-circle shadow-lg"
-          alt="Ricardo Lens"
-        />
-        <div class="card-body">
-          <h4 class="text-warning">Ricardo Lens</h4>
-          <p class="text-warning">Maestro en barba y perfilado de precisión.</p>
+          <h4 class="text-warning">{{ barbero.nombre }}</h4>
+          <p class="text-warning">{{ barbero.especialidad }}</p>
         </div>
       </div>
     </div>
