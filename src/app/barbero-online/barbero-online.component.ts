@@ -25,7 +25,7 @@ export class BarberoOnlineComponent {
     this.fadeIn = false;
     setTimeout(() => {
       this.isLoginMode = !this.isLoginMode;
-      this.fadeIn = true;
+      this.fadeIn = true
     }, 200);
   }
 
