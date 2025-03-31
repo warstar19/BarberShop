@@ -1,0 +1,52 @@
+.contenedor-notificaciones {
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+}
+
+.alert {
+  margin-bottom: 10px;
+  cursor: pointer;
+  background-color: #343a40;
+  color: #fdfdfd;
+  font-size: 1.5rem;
+  border-color: #4d4e50;;
+}
+
+.detalle-cita {
+  margin-bottom: 10px;
+  margin-top: -10px;
+  font-size: 1.5rem;
+}
+
+.display-6 {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #ffc107;
+  margin: 10px 0;
+  border-color: #4d4e50;
+}
+
+.text-muted {
+  font-size: 0.9rem;
+}
+
+.skeleton-loader {
+  width: 100%;
+  margin-bottom: 50px;
+  height: 50px;
+  background-color: #343a40;
+  border-radius: 10px;
+  animation: skeleton-blink 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-blink {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}

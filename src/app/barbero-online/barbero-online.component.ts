@@ -1,13 +1,14 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';  // Importa FormsModule
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';  // Importa Router
 
 @Component({
   selector: 'app-barbero-online',
   standalone: true,
   templateUrl: './barbero-online.component.html',
   styleUrls: ['./barbero-online.component.css'],
-  imports: [CommonModule, FormsModule],  // Agrega FormsModule aquí
+  imports: [CommonModule, FormsModule],
 })
 export class BarberoOnlineComponent {
   isLoginMode: boolean = true;
@@ -18,14 +19,14 @@ export class BarberoOnlineComponent {
   password: string = '';
   confirmPassword: string = '';
 
-  constructor() {}
+  constructor(private router: Router) {}  // Inyecta el Router
 
   toggleMode(event: Event): void {
     event.preventDefault();
     this.fadeIn = false;
     setTimeout(() => {
       this.isLoginMode = !this.isLoginMode;
-      this.fadeIn = true
+      this.fadeIn = true;
     }, 200);
   }
 
@@ -47,6 +48,6 @@ export class BarberoOnlineComponent {
 
   login(): void {
     console.log("Usuario logeado");
-    // Aquí va la lógica para iniciar sesión, por ejemplo, redirigir.
+    this.router.navigate(['/usuario']);  // Redirige a la ruta "usuario"
   }
 }
