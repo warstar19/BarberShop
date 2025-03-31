@@ -1,0 +1,28 @@
+<div class="container-fluid">
+  <div class="row">
+    <!-- Barra lateral fija -->
+    <div class="col-md-3 col-lg-2 bg-dark text-white p-3 min-vh-100">
+      <h4 class="text-center mb-4">Panel de Usuario</h4>
+      <div class="list-group">
+        <a *ngIf="isRouteAvailable('reserva')" routerLink="reserva" class="list-group-item list-group-item-action bg-dark text-white hover-bg-yellow">Reservar Cita</a>
+        <a *ngIf="isRouteAvailable('historial')" routerLink="historial" class="list-group-item list-group-item-action bg-dark text-white hover-bg-yellow">Historial de Citas</a>
+        <a *ngIf="isRouteAvailable('perfil')" routerLink="perfil" class="list-group-item list-group-item-action bg-dark text-white hover-bg-yellow">Perfil del Usuario</a>
+        <a *ngIf="isRouteAvailable('notificaciones')" routerLink="notificaciones" class="list-group-item list-group-item-action bg-dark text-white hover-bg-yellow">Notificaciones</a>
+        <a *ngIf="isRouteAvailable('servicios')" routerLink="servicios" class="list-group-item list-group-item-action bg-dark text-white hover-bg-yellow">Servicios y Precios</a>
+        <a *ngIf="isRouteAvailable('galeria')" routerLink="galeria" class="list-group-item list-group-item-action bg-dark text-white hover-bg-yellow">Galería de Trabajos</a>
+        <a *ngIf="isRouteAvailable('soporte')" routerLink="soporte" class="list-group-item list-group-item-action bg-dark text-white hover-bg-yellow">Centro de Ayuda</a>
+      </div>
+    </div>
+
+    <!-- Contenido principal (ocupando el resto del espacio) -->
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">Bienvenido al Panel de Usuario</h1>
+      </div>
+      <!-- Aquí el contenido cambiará según la ruta -->
+      <div id="contenido-principal" class="fade-in">
+        <router-outlet></router-outlet>
+      </div>
+    </main>
+  </div>
+</div>

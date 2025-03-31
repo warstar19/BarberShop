@@ -1,0 +1,41 @@
+<div class="contenedor-notificaciones container bg-dark text-warning mt-4 p-4 rounded">
+  <h2 class="text-center mb-3">Notificaciones de Cita</h2>
+
+  <!-- Skeleton Loader -->
+  <div *ngIf="cargando">
+    <div class="skeleton-loader"></div>
+    <div class="skeleton-loader"></div>
+    <div class="skeleton-loader"></div>
+  </div>
+
+  <!-- Mostrar citas después de cargar -->
+  <div *ngIf="!cargando">
+    <!-- Mostrar notificaciones -->
+    <div *ngFor="let notificacion of notificaciones" class="alert alert-info text-center" role="alert"  style="background-color:  #ffc10777 !important; font-weight: bold;">
+      {{ notificacion }}
+    </div>
+
+    <!-- Mostrar citas -->
+    <div *ngFor="let cita of citas">
+      <!-- Cita individual -->
+      <div class="alert alert-info text-center" role="alert" (click)="toggleDetalle(cita)"  style="border-color: #4d4e50;">
+        {{ cita.mensajeCita }}
+        <span *ngIf="cita === citaSeleccionada" class="d-block text-muted">Ocultar detalles</span>
+        <div class="text-center mt-3">
+          <p class="h5">Tiempo restante:</p>
+          <p class="display-6">{{ cita.tiempoRestante }}</p>
+        </div>
+      </div>
+
+      <div *ngIf="cita === citaSeleccionada" class="detalle-cita p-3 bg-secondary rounded text-center">
+        <p><strong>Barbero:</strong> {{ cita.barbero }}</p>
+        <p><strong>Servicio:</strong> {{ cita.servicio }}</p>
+        <p><strong>Tiempo estimado:</strong> {{ cita.tiempoEstimado }}</p>
+        <p><strong>Cliente:</strong> {{ cita.cliente }}</p>
+        <p><strong>Teléfono:</strong> {{ cita.telefono }}</p>
+      </div>
+
+
+    </div>
+  </div>
+</div>

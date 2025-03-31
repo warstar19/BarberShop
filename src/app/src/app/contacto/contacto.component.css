@@ -1,0 +1,67 @@
+/* Estilos para el formulario de contacto */
+.container {
+  margin: auto;
+  opacity: 0.9;
+}
+
+.card-body {
+  padding: 2rem;
+  background: rgba(0, 0, 0, 0.4); /* Fondo oscuro dentro de la card */
+  color: #fdfdfd; /* Color de texto blanco */
+  border-radius: 15px;
+}
+.form-label {
+  color: #fdfdfd; /* Color de las etiquetas */
+}
+
+.form-control {
+  background-color: #343a40; /* Fondo oscuro en los campos de entrada */
+  color: #fdfdfd; /* Color blanco en el texto */
+  border: 1px solid #fdfdfd; /* Borde blanco */
+}
+
+.form-control:focus {
+  background-color: #343a40; /* Fondo oscuro al enfocarse */
+  color: #fdfdfd; /* Color blanco */
+  border: 1px solid #ffc107; /* Borde amarillo al enfocarse */
+}
+
+button.btn-primary {
+  background-color: #ffc107; /* Color amarillo */
+  border-color: #ffc107; /* Borde amarillo */
+}
+
+button.btn-primary:hover {
+  background-color: #e0a800; /* Color amarillo más oscuro al pasar el mouse */
+  border-color: #e0a800;
+}
+
+/* Mapa de ubicación de las tiendas */
+.contact-container {
+  margin-top: 30px;
+}
+
+h2 {
+  color: #ffc107;
+}
+
+.card {
+  border-radius: 15px;
+  animation: fadeIn 0.5s ease-in-out; /* Agregar animación fade-in */
+}
+
+/* Efecto fade-in */
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Definir la animación fadeIn */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+

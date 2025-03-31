@@ -1,0 +1,67 @@
+<div class="container mt-5 justify-content-center align-items-center vh-100 " >
+  <h1 class="text-center mb-4" style="color: #ffc107;">Ubicación de Nuestras Sucursales</h1>
+  <div class="d-flex">
+  <!-- Selección de tienda -->
+  <div class="card shadow-lg border-0 rounded-4 fade-in container  justify-content-center align-items-center" style="width: 100%; max-width: 600px; background-color: #212529;">
+    <div class="card-body p-4">
+      <h2 class="text-center mb-4" style="color: #ffc107;">Selecciona una Tienda</h2>
+
+      <div class="form-group">
+        <label for="sucursal" class="form-label" style="color: #fdfdfd;">Selecciona una tienda:</label>
+        <select id="sucursal" class="form-control rounded-3" (change)="cambiarUbicacion()" style="background-color: #343a40; color: #fdfdfd; border: 1px solid #fdfdfd;">
+          <option value="" disabled selected>Selecciona una sucursal</option>
+          <option *ngFor="let tienda of tiendas" [value]="tienda.nombre">{{ tienda.nombre }}</option>
+        </select>
+      </div>
+    </div>
+
+
+  <!-- Mapa -->
+  <div id="mapa" style="height: 400px; width: 100%; margin-top: 30px; "></div>
+</div>
+<div *ngIf="tiendaSeleccionada" class="card shadow-lg border-0 rounded-4 fade-in" style="width: 100%; max-width: 600px; background-color: rgba(0, 0, 0, 0.4);">
+  <div class="card-body p-4 text-center">
+    <h3 style="color: #ffc107;">{{ tiendaSeleccionada.nombre }}</h3>
+    <img [src]="'assets/images/' + tiendaSeleccionada.imagen"
+         alt="{{ tiendaSeleccionada.nombre }}"
+         class="img-fluid mb-3"
+         style="width: 100%; height: 200px; object-fit: cover;" />
+
+    <!-- Teléfono y WhatsApp -->
+    <p style="color: #fdfdfd;">
+      <strong>Teléfono: </strong>
+      <a [href]="tiendaSeleccionada.whatsapp" target="_blank" style="color: #ffc107;">{{ tiendaSeleccionada.telefono }}</a>
+    </p>
+
+    <!-- Correo -->
+    <p style="color: #fdfdfd;">
+      <strong>Correo: </strong>
+      <a [href]="'mailto:' + tiendaSeleccionada.correo" style="color: #ffc107;">{{ tiendaSeleccionada.correo }}</a>
+    </p>
+
+    <!-- Dirección -->
+    <p style="color: #fdfdfd;">
+      <strong>Dirección: </strong>{{ tiendaSeleccionada.direccion }}
+    </p>
+
+    <!-- Horario -->
+    <p style="color: #fdfdfd;">
+      <strong>Horario: </strong>{{ tiendaSeleccionada.horario }}
+    </p>
+
+    <!-- Servicios -->
+    <p style="color: #fdfdfd;">
+      <strong>Servicios: </strong>{{ tiendaSeleccionada.servicios.join(', ') }}
+    </p>
+
+    <!-- Cómo llegar (Google Maps) -->
+    <a [href]="tiendaSeleccionada.mapa" target="_blank" style="color: #ffc107;">Ver en Google Maps</a>
+  </div>
+</div>
+
+  <!-- Mensaje de error -->
+  <div *ngIf="errorMessage" class="alert alert-danger mt-4 fade-in">
+    <p style="color: #fdfdfd;">{{ errorMessage }}</p>
+  </div>
+</div>
+</div>

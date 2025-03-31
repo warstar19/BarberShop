@@ -1,0 +1,106 @@
+/* Estilos generales para la página de sucursales */
+.contenedor-sucursales {
+  padding: 20px;
+  text-align: center; /* Centra el contenido horizontalmente */
+  background-color: #212529; /* Fondo oscuro */
+  color: #fdfdfd; /* Color del texto blanco */
+  border-radius: 15px; /* Bordes redondeados en el contenedor */
+}
+
+/* Estilo para el título principal */
+h1 {
+  color: #ffc107; /* Color amarillo para el título */
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+/* Estilo para el título de sección */
+h2 {
+  color: #ffc107;
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+}
+
+/* Estilo para el encabezado de cada tienda */
+h3 {
+  color: #ffc107;
+  font-size: 1.25rem;
+  margin-bottom: 10px;
+}
+
+/* Estilo para las etiquetas de los formularios */
+.form-label {
+  color: #fdfdfd;
+}
+
+/* Estilo para las tarjetas de información de las tiendas */
+.card {
+  background-color: rgba(0, 0, 0, 0.4); /* Fondo oscuro transparente */
+  border-radius: 15px;
+  padding: 20px;
+  opacity: 0.9;
+}
+
+.card-body {
+  padding: 1rem;
+  color: #fdfdfd;
+}
+
+/* Estilo de las imágenes dentro de las tarjetas */
+.img-fluid {
+  border-radius: 8px; /* Bordes redondeados para las imágenes */
+  object-fit: cover; /* Asegura que las imágenes se ajusten correctamente */
+}
+
+/* Estilo para el mensaje de error */
+.alert-danger {
+  background-color: #dc3545; /* Fondo rojo para el mensaje de error */
+  color: #fdfdfd;
+  border-radius: 5px;
+  padding: 10px;
+  margin-top: 20px;
+}
+
+
+button:hover {
+  background-color: #e0a800; /* Cambio de color al pasar el mouse */
+}
+
+/* Estilo para el selector de sucursal */
+select {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-top: 10px;
+  width: 250px;
+}
+
+select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* Estilo del mapa */
+#mapa {
+  height: 400px;
+  width: 100%;
+  position: relative;
+  border-radius: 8px;
+  margin-top: 20px;
+}
+
+/* Animación fade-in para las secciones */
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

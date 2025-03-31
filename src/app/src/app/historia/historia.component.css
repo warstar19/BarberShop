@@ -1,0 +1,68 @@
+.contenedor-historia {
+  padding: 20px;
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.seccion-texto {
+  margin-bottom: 20px;
+}
+
+.seccion-imagen {
+  margin-bottom: 30px;
+}
+
+.seccion-imagen img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.container {
+  opacity: 0.9;
+}
+
+div {
+  border-radius: 10px;
+}
+
+.bg-dark {
+  background-color: #212529 !important;
+}
+
+.text-warning {
+  color: #ffc107;
+}
+
+/* Animación de entrada (Fade In) */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fadeInText {
+  animation: fadeIn 1.5s ease-out forwards;
+}
+
+/* Clases para hacer visible la sección */
+.row {
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+.row.visible {
+  opacity: 1;
+  animation: fadeIn 1.5s ease-out forwards;
+}
+
+/* Añadir efecto en la imagen del contenedor de historia */
+img.fadeInText {
+  animation: fadeIn 2s ease-out forwards;
+}

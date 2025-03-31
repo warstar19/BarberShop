@@ -1,0 +1,16 @@
+.navbar a:hover {
+  background-color: #ddd;
+  color: black;
+}
+.navbar  #barberoOnline{
+  background-color: #00ff4c;
+  color: black;
+}
+.navbar  #barberoOnline:hover{
+  background-color: #ddd;
+  color: #000000;
+}
+
+.logo img {
+  max-height: 50px;
+}
