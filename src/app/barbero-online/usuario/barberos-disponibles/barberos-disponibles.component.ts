@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { ApiService } from '../../../services/api.service';
 
 @Component({
   selector: 'app-barberos-disponibles',
@@ -7,5 +8,13 @@ import { Component } from '@angular/core';
   styleUrl: './barberos-disponibles.component.css'
 })
 export class BarberosDisponiblesComponent {
+  barberos: any[] = [];
 
+  constructor(private apiService: ApiService) {}
+
+  ngOnInit(): void {
+    this.apiService.getBarberos().subscribe(data => {
+      this.barberos = data;
+    });
+  }
 }
