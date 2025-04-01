@@ -1,6 +1,0 @@
-#mapa {
-  height: 400px; /* Altura del mapa */
-  width: 100%;    /* Ancho del mapa */
-  position: relative;
-  border-radius: 8px;
-}
