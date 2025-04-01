@@ -1,1 +1,41 @@
-<p>servicios works!</p>
+<br />
+<h2 class="text-center mb-4" style="color: #ffc107">
+  Nuestro Servicios y Precios
+</h2>
+<div class="container py-5 contenedor-historia">
+  <div
+    *ngFor="let section of servicios; let i = index"
+    class="row align-items-center mb-4 fadeInText"
+  >
+    <!-- Sección de texto y sección de imagen intercaladas -->
+    <div
+      [class.order-1]="i % 2 === 0"
+      [class.order-2]="i % 2 !== 0"
+      class="col-lg-6"
+      [ngClass]="{ 'bg-dark': section.bgColor }"
+    >
+      <h2 class="display-4 text-warning mb-4">{{ section.titulo }}</h2>
+      <p class="text-warning lead">
+        {{ section.descripcion }}
+      </p>
+      <p class="text-warning lead">
+        {{ section.precio }}
+      </p>
+
+    </div>
+
+    <div
+      [class.order-1]="i % 2 !== 0"
+      [class.order-2]="i % 2 === 0"
+      class="col-lg-6"
+    >
+      <img
+        *ngIf="section.imagen"
+        [src]="section.imagen"
+        alt="{{ section.alt }}"
+        class="img-fluid rounded-3 shadow-lg"
+        style="height: 250px; object-fit: cover"
+      />
+    </div>
+  </div>
+</div>
