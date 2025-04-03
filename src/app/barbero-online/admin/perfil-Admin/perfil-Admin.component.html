@@ -1,0 +1,96 @@
+<div class="container bg-dark text-warning p-4 rounded-3" style="max-width: 600px;">
+  <h2 class="text-center mb-4 fw-bold">{{ isEditing ? 'Editar Perfil' : 'Perfil de Administrador' }}</h2>
+
+  <!-- Mostrar mensaje de guardado exitoso -->
+  <div *ngIf="isUpdated" class="alert alert-success text-center" style="color: #fdfdfd;">
+    Perfil actualizado correctamente
+  </div>
+
+  <!-- Formulario de edición -->
+  <form *ngIf="isEditing" (ngSubmit)="saveChanges($event)">
+    <div class="mb-3">
+      <label for="username" class="form-label" style="color: #fdfdfd;">Nombre de Usuario:</label>
+      <input type="text" class="form-control" id="username" [(ngModel)]="username" name="username" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="email" class="form-label" style="color: #fdfdfd;">Correo Electrónico:</label>
+      <input type="email" class="form-control" id="email" [(ngModel)]="email" name="email" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="telefono" class="form-label" style="color: #fdfdfd;">Número de Teléfono:</label>
+      <input type="text" class="form-control" id="telefono" [(ngModel)]="telefono" name="telefono" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="direccion" class="form-label" style="color: #fdfdfd;">Dirección:</label>
+      <input type="text" class="form-control" id="direccion" [(ngModel)]="direccion" name="direccion" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="fechaNacimiento" class="form-label" style="color: #fdfdfd;">Fecha de Nacimiento:</label>
+      <input type="date" class="form-control" id="fechaNacimiento" [(ngModel)]="fechaNacimiento" name="fechaNacimiento" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="genero" class="form-label" style="color: #fdfdfd;">Género:</label>
+      <select class="form-control" id="genero" [(ngModel)]="genero" name="genero">
+        <option value="Masculino">Masculino</option>
+        <option value="Femenino">Femenino</option>
+        <option value="Otro">Otro</option>
+      </select>
+    </div>
+
+    <!-- Cambiar Contraseña -->
+    <div class="mb-3">
+      <label for="password" class="form-label" style="color: #fdfdfd;">Contraseña Actual:</label>
+      <input type="password" class="form-control" id="password" [(ngModel)]="password" name="password">
+    </div>
+
+    <div class="mb-3">
+      <label for="newPassword" class="form-label" style="color: #fdfdfd;">Nueva Contraseña:</label>
+      <input type="password" class="form-control" id="newPassword" [(ngModel)]="newPassword" name="newPassword">
+    </div>
+
+    <div class="mb-3">
+      <label for="confirmPassword" class="form-label" style="color: #fdfdfd;">Confirmar Nueva Contraseña:</label>
+      <input type="password" class="form-control" id="confirmPassword" [(ngModel)]="confirmPassword" name="confirmPassword">
+    </div>
+
+    <!-- Mensajes de error debajo de los campos -->
+    <div *ngIf="errorMessages.length > 0" class="text-danger">
+      <ul>
+        <li *ngFor="let error of errorMessages">{{ error }}</li>
+      </ul>
+    </div>
+
+    <div class="d-flex justify-content-between">
+      <button type="button" class="btn btn-secondary" (click)="cancelEdit()">Cancelar</button>
+      <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+    </div>
+  </form>
+
+  <!-- Información mostrada cuando no está en modo de edición -->
+  <div *ngIf="!isEditing">
+    <div class="mb-3">
+      <strong>Nombre de Usuario:</strong> {{ username }}
+    </div>
+    <div class="mb-3">
+      <strong>Correo Electrónico:</strong> {{ email }}
+    </div>
+    <div class="mb-3">
+      <strong>Teléfono:</strong> {{ telefono }}
+    </div>
+    <div class="mb-3">
+      <strong>Dirección:</strong> {{ direccion }}
+    </div>
+    <div class="mb-3">
+      <strong>Fecha de Nacimiento:</strong> {{ fechaNacimiento }}
+    </div>
+    <div class="mb-3">
+      <strong>Género:</strong> {{ genero }}
+    </div>
+    <button class="btn btn-primary" (click)="toggleEditMode()">Editar Perfil</button>
+  </div>
+</div>

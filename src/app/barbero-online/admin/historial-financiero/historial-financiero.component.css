@@ -1,0 +1,35 @@
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 8px;
+  text-align: center;
+}
+
+th {
+  background-color: #343a40;
+  color: #ffc107;
+}
+
+td {
+  background-color: #212529;
+  color: #f8f9fa;
+}
+
+input[type="text"], input[type="time"], input[type="date"], select {
+  margin-bottom: 10px;
+}
+
+button {
+  margin: 5px;
+}
+
+.container {
+  margin: 20px auto;
+}
+
+h2 {
+  color: #ffc107;
+}
