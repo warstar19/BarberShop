@@ -17,6 +17,20 @@ import { ServiciosComponent } from './barbero-online/usuario/servicios/servicios
 import { GaleriaComponent } from './barbero-online/usuario/galeria/galeria.component';
 import { SoporteComponent } from './barbero-online/usuario/soporte/soporte.component';
 
+// Importamos los componentes de Barbero y sus subcomponentes
+import { BarberoComponent } from './barbero-online/barbero/barbero/barbero.component';
+import { PerfilBarberoComponent } from './barbero-online/barbero/perfil-Barbero/perfil-barbero.component';
+import { CitasDelDiaComponent } from './barbero-online/barbero/citas-del-dia/citas-del-dia.component';
+import { HistorialBarberoComponent } from './barbero-online/barbero/historial-Barbero/historial-Barberos.component';
+
+// Importamos los componentes de Admin y sus subcomponentes
+import { AdminComponent } from './barbero-online/admin/admin/admin.component';
+import { PerfilAdminComponent } from './barbero-online/admin/perfil-Admin/perfil-Admin.component';
+import { GestionUsuariosComponent } from './barbero-online/admin/gestion-usuarios/gestion-usuarios.component';
+import { GestionCitasComponent } from './barbero-online/admin/gestion-citas/gestion-citas.component';
+import { CalendarioComponent } from './barbero-online/admin/calendario/calendario.component';
+import { HistorialFinancieroComponent } from './barbero-online/admin/historial-financiero/historial-financiero.component';
+
 export const routes: Routes = [
   { path: 'inicio', component: InicioComponent },
   { path: 'historia', component: HistoriaComponent },
@@ -38,6 +52,32 @@ export const routes: Routes = [
       { path: 'galeria', component: GaleriaComponent },
       { path: 'soporte', component: SoporteComponent },
       { path: '', redirectTo: 'reserva', pathMatch: 'full' }  // Ruta por defecto dentro de UsuarioComponent
+    ]
+  },
+
+  // Ruta de 'barbero' con subrutas
+  {
+    path: 'barbero',
+    component: BarberoComponent,
+    children: [
+      { path: 'perfil', component: PerfilBarberoComponent },
+      { path: 'citas-del-dia', component: CitasDelDiaComponent },
+      { path: 'historial', component: HistorialBarberoComponent },
+      { path: '', redirectTo: 'citas-del-dia', pathMatch: 'full' }  // Ruta por defecto dentro de BarberoComponent
+    ]
+  },
+
+  // Ruta de 'admin' con subrutas
+  {
+    path: 'admin',
+    component: AdminComponent,
+    children: [
+      { path: 'perfil', component: PerfilAdminComponent },
+      { path: 'gestion-usuarios', component: GestionUsuariosComponent },
+      { path: 'gestion-citas', component: GestionCitasComponent },
+      { path: 'calendario', component: CalendarioComponent },
+      { path: 'historial-financiero', component: HistorialFinancieroComponent },
+      { path: '', redirectTo: 'calendario', pathMatch: 'full' }  // Ruta por defecto dentro de AdminComponent
     ]
   },
 
