@@ -1,191 +1,185 @@
-<div class="calendar-wrapper">
-  <div class="calendar-container">
-    <div class="calendar-controls">
-      <button class="btn view-btn" [class.active]="view === CalendarView.Day" (click)="changeView(CalendarView.Day)">Día</button>
-      <button class="btn view-btn" [class.active]="view === CalendarView.Week" (click)="changeView(CalendarView.Week)">Semana</button>
-      <button class="btn view-btn" [class.active]="view === CalendarView.Month" (click)="changeView(CalendarView.Month)">Mes</button>
-      <button class="btn nav-btn" (click)="prevPeriod()" title="Anterior">
-        <i class="bi bi-chevron-left"></i> Anterior
+<div class="gestion-citas-lista container-fluid bg-dark text-warning min-vh-100 py-5 px-4" style="font-family: 'Segoe UI', sans-serif;">
+  <h2 class="mb-5 text-center fw-bold display-6">📅 Gestión de Citas</h2>
+
+  <!-- Mostrar el listado de citas si no hay formularios activos -->
+  <div *ngIf="!mostrarFormularioNuevaCita && !mostrarFormularioReprogramar; else mostrarFormularios">
+    <div class="text-end mb-3">
+      <button class="btn btn-success" (click)="agregarCita()">
+        <i class="bi bi-plus-circle"></i> Agregar nueva cita
       </button>
-      <button class="btn today-btn" (click)="today()">Hoy</button>
-      <button class="btn nav-btn" (click)="nextPeriod()" title="Siguiente">
-        Siguiente <i class="bi bi-chevron-right"></i>
-      </button>
-      <span class="calendar-title">{{ viewDate | date: viewTitleFormat }}</span>
     </div>
-
-    <div class="calendar-grid" [ngSwitch]="view">
-      <!-- Vista de Mes -->
-      <div *ngSwitchCase="CalendarView.Month" class="month-view">
-        <div class="month-header">
-          <div class="day-header" *ngFor="let day of weekDays; let i = index">
-            {{ spanishDayNames[i] }}
-          </div>
-        </div>
-        <div class="month-grid-container">
-          <div class="month-grid">
-            <div *ngFor="let week of monthGrid" class="week-row">
-              <div *ngFor="let day of week" class="day-cell"
-                   [class.out-month]="!isSameMonth(day.date, viewDate)"
-                   [class.today]="isToday(day.date)"
-                   [class.selected]="isSelected(day.date)"
-                   (click)="selectDay(day)">
-                <div class="day-number">{{ day.date | date: 'd' }}</div>
-                <div class="day-events-container">
-                  <div class="day-events">
-                    <div *ngFor="let cita of day.events" class="event-item"
-                         [style.backgroundColor]="cita.color?.primary"
-                         (click)="selectEvent(cita); $event.stopPropagation()">
-                      {{ cita.title }}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Vista de Semana Horizontal -->
-      <div *ngSwitchCase="CalendarView.Week" class="week-view">
-        <div class="week-header">
-          <div class="time-column-header"></div>
-          <div class="day-header" *ngFor="let day of weekDays; let i = index"
-               [class.today]="isToday(day)"
-               [class.selected]="isSelected(day)"
-               (click)="selectDay({date: day, events: getDayEvents(day)})">
-            <div class="day-name">{{ spanishDayNames[i] }}</div>
-            <div class="day-number">{{ day | date: 'd' }}</div>
-          </div>
-        </div>
-
-        <div class="week-body">
-          <div class="time-column">
-            <div class="time-slot" *ngFor="let hour of hours" [class.current-hour]="isCurrentHour(hour)">
-              {{ hour }}:00
-            </div>
-          </div>
-
-          <div class="days-container">
-            <div class="day-column" *ngFor="let day of weekDays">
-              <div class="time-slot" *ngFor="let hour of hours" [class.current-hour]="isCurrentHour(hour)">
-                <div class="hour-events">
-                  <div *ngFor="let cita of getEventsForHour(day, hour)" class="event-item"
-                       [style.backgroundColor]="cita.color?.primary"
-                       [style.height.%]="getEventHeight(cita)"
-                       [style.top.px]="getEventTopPosition(cita)"
-                       (click)="selectEvent(cita); $event.stopPropagation()">
-                    <div class="event-time">{{ cita.start | date:'shortTime' }}</div>
-                    <div class="event-title">{{ cita.title }}</div>
-                    <div class="event-client">{{ cita.meta?.cliente }}</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Vista de Día -->
-      <div *ngSwitchCase="CalendarView.Day" class="day-view">
-        <div class="day-header">
-          {{ viewDate | date: 'fullDate' }}
-        </div>
-        <div class="day-grid">
-          <div class="hour-row" *ngFor="let hour of hours">
-            <div class="hour-label">{{ hour }}:00</div>
-            <div class="hour-cell" [class.today]="isToday(viewDate)">
-              <div class="hour-events">
-                <div *ngFor="let cita of getEventsForHour(viewDate, hour)" class="event-item"
-                     [style.backgroundColor]="cita.color?.primary"
-                     (click)="selectEvent(cita)">
-                  {{ cita.title }}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Panel lateral de información -->
-  <div class="info-panel">
-    <div *ngIf="selectedDay" class="day-info">
-      <h3>{{ selectedDay.date | date: 'fullDate' }}</h3>
-      <div *ngIf="selectedCita; else dayEventsTemplate" class="event-detail">
-        <button class="btn back-btn" (click)="selectedCita = null">
-          <i class="bi bi-arrow-left"></i> Volver
-        </button>
-        <h4>{{ selectedCita.title }}</h4>
-        <div class="event-info">
-          <p><strong>Cliente:</strong> {{ selectedCita.meta?.cliente }}</p>
-          <p><strong>Servicio:</strong> {{ selectedCita.meta?.servicio }}</p>
-          <p><strong>Duración:</strong> {{ selectedCita.meta?.tiempo }}</p>
-          <p><strong>Hora:</strong> {{ selectedCita.start | date: 'shortTime' }} - {{ getEndTime(selectedCita) }}</p>
-          <p><strong>Estado:</strong>
-            <span class="event-status" [class.confirmed]="selectedCita.meta?.estado === 'confirmada'"
-                  [class.pending]="selectedCita.meta?.estado === 'pendiente'"
-                  [class.canceled]="selectedCita.meta?.estado === 'cancelada'">
-              {{ selectedCita.meta?.estado }}
-            </span>
-          </p>
-        </div>
-        <div class="event-actions">
-          <button class="btn btn-confirm" (click)="confirmCita(selectedCita)">
-            <i class="bi bi-check-circle"></i> Confirmar
-          </button>
-          <button class="btn btn-cancel" (click)="cancelCita(selectedCita)">
-            <i class="bi bi-x-circle"></i> Cancelar
-          </button>
-          <button class="btn btn-reschedule" (click)="rescheduleCita(selectedCita)">
-            <i class="bi bi-calendar-event"></i> Reprogramar
-          </button>
-        </div>
-      </div>
-      <ng-template #dayEventsTemplate>
-        <div class="events-list">
-          <h4>Citas programadas</h4>
-          <div *ngIf="selectedDay.events.length > 0; else noEvents">
-            <div *ngFor="let cita of selectedDay.events" class="event-summary"
-                 [class.confirmed]="cita.meta?.estado === 'confirmada'"
-                 [class.pending]="cita.meta?.estado === 'pendiente'"
-                 [class.canceled]="cita.meta?.estado === 'cancelada'"
-                 (click)="selectEvent(cita)">
-              <span class="event-time">{{ cita.start | date: 'shortTime' }}</span>
-              <span class="event-title">{{ cita.title }}</span>
-              <span class="event-status">
-                {{ cita.meta?.estado }}
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+      <div *ngFor="let cita of events" class="col">
+        <div class="card bg-transparent text-warning border border-warning shadow-lg h-100">
+          <div class="card-body">
+            <h5 class="card-title fw-semibold fs-5 text-warning mb-3">
+              <i class="bi bi-scissors me-2"></i>{{ cita.servicio_nombre || 'Servicio no disponible' }}
+            </h5>
+            <p class="card-text mb-2 fs-6">
+              <strong><i class="bi bi-person-fill me-2"></i>Cliente:</strong>
+              {{ cita.cliente_nombre || 'No disponible' }}
+            </p>
+            <p class="card-text mb-2 fs-6">
+              <strong><i class="bi bi-person-gear me-2"></i>Barbero:</strong>
+              {{ cita.barbero_nombre || 'No disponible' }}
+            </p>
+            <p class="card-text mb-2 fs-6">
+              <strong><i class="bi bi-calendar-date me-2"></i>Fecha:</strong>
+              {{ cita.fecha_inicio | date: 'fullDate' }}
+            </p>
+            <p class="card-text mb-2 fs-6">
+              <strong><i class="bi bi-clock me-2"></i>Hora:</strong>
+              {{ cita.fecha_inicio | date: 'shortTime' }} - {{ cita.fecha_fin | date: 'shortTime' }}
+            </p>
+            <p class="card-text mb-3 fs-6">
+              <strong><i class="bi bi-info-circle me-2"></i>Estado:</strong>
+              <span
+                class="badge fs-6 px-3 py-1"
+                [ngClass]="{
+                  'bg-success': cita.estado === 'confirmada',
+                  'bg-warning text-dark': cita.estado === 'pendiente',
+                  'bg-danger': cita.estado === 'cancelada',
+                  'bg-secondary': cita.estado === 'completada'
+                }"
+              >
+                {{ cita.estado }}
               </span>
+            </p>
+            <p class="card-text mb-2 fs-6">
+              <strong><i class="bi bi-card-list me-2"></i>Notas:</strong>
+              {{ cita.notas }}
+            </p>
+            <div
+              class="d-flex justify-content-end gap-2"
+              *ngIf="cita.estado === 'pendiente' || cita.estado === 'confirmada'"
+            >
+              <button
+                *ngIf="cita.estado === 'pendiente'"
+                class="btn btn-sm btn-outline-warning fw-semibold"
+                (click)="confirmCita(cita)"
+              >
+                <i class="bi bi-check-circle me-1"></i> Confirmar
+              </button>
+              <button
+                class="btn btn-sm btn-outline-danger fw-semibold"
+                (click)="cancelCita(cita)"
+              >
+                <i class="bi bi-x-circle me-1"></i> {{ cita.estado === 'pendiente' ? 'Rechazar' : 'Cancelar' }}
+              </button>
+              <button
+                class="btn btn-sm btn-outline-info fw-semibold"
+                (click)="rescheduleCita(cita)"
+              >
+                <i class="bi bi-calendar-event me-1"></i> Reprogramar
+              </button>
             </div>
           </div>
-          <ng-template #noEvents>
-            <p class="no-events">No hay citas programadas</p>
-          </ng-template>
-        </div>
-      </ng-template>
-    </div>
-    <div *ngIf="!selectedDay" class="default-info">
-      <h3>Hoy: {{ todayDate | date: 'fullDate' }}</h3>
-      <div class="events-list">
-        <h4>Citas de hoy</h4>
-        <div *ngIf="citasHoy.length > 0; else noEventsToday">
-          <div *ngFor="let cita of citasHoy" class="event-summary"
-               [class.confirmed]="cita.meta?.estado === 'confirmada'"
-               [class.pending]="cita.meta?.estado === 'pendiente'"
-               [class.canceled]="cita.meta?.estado === 'cancelada'"
-               (click)="selectEvent(cita)">
-            <span class="event-time">{{ cita.start | date: 'shortTime' }}</span>
-            <span class="event-title">{{ cita.title }}</span>
-            <span class="event-status">
-              {{ cita.meta?.estado }}
-            </span>
-          </div>
-        </div>
-        <ng-template #noEventsToday>
-          <p class="no-events">No hay citas para hoy</p>
-        </ng-template>
+        </div>        
       </div>
     </div>
   </div>
+
+  <!-- Mensaje si no hay citas programadas -->
+  <ng-template #noCitas>
+    <div class="alert alert-warning text-center mt-5 fs-5" role="alert">
+      <i class="bi bi-info-circle me-2"></i> No hay citas programadas.
+    </div>
+  </ng-template>
+
+  <!-- Mostrar formularios dependiendo de las condiciones -->
+  <ng-template #mostrarFormularios>
+    <ng-container *ngIf="mostrarFormularioNuevaCita" [ngTemplateOutlet]="formularioNuevaCita"></ng-container>
+    <ng-container *ngIf="mostrarFormularioReprogramar && citaAReprogramar" [ngTemplateOutlet]="formularioReprogramar"></ng-container>
+  </ng-template>
+
+  <!-- Formulario de Nueva Cita -->
+  <ng-template #formularioNuevaCita>
+    <div class="card bg-transparent text-warning border border-warning shadow-lg mt-5">
+      <div class="card-header bg-secondary text-warning">
+        <h5 class="card-title fw-semibold">Nueva Cita</h5>
+      </div>
+      <div class="card-body">
+        <form (ngSubmit)="guardarNuevaCita()">
+          <div class="mb-3">
+            <label for="cliente_id" class="form-label">Cliente</label>
+            <select class="form-select bg-dark text-warning" id="cliente_id" name="cliente_id" [(ngModel)]="nuevaCita.cliente_id" required>
+              <option value="" disabled selected>Seleccionar Cliente</option>
+              <option *ngFor="let cliente of clientes" [value]="cliente.id">{{ cliente.username }}</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="barbero_id" class="form-label">Barbero</label>
+            <select class="form-select bg-dark text-warning" id="barbero_id" name="barbero_id" [(ngModel)]="nuevaCita.barbero_id" required>
+              <option value="" disabled selected>Seleccionar Barbero</option>
+              <option *ngFor="let barbero of barberos" [value]="barbero.id">{{ barbero.username }}</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="sucursal_id" class="form-label">Sucursal</label>
+            <select class="form-select bg-dark text-warning" id="sucursal_id" name="sucursal_id" [(ngModel)]="nuevaCita.sucursal_id" (change)="cargarServiciosPorSucursal(nuevaCita.sucursal_id)" required>
+              <option value="" disabled selected>Seleccionar Sucursal</option>
+              <option *ngFor="let sucursal of sucursales" [value]="sucursal.id">{{ sucursal.nombre }}</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="servicio_id" class="form-label">Servicio</label>
+            <select class="form-select bg-dark text-warning" id="servicio_id" name="servicio_id" [(ngModel)]="nuevaCita.servicio_id" required>
+              <option value="" disabled selected>Seleccionar Servicio</option>
+              <option *ngFor="let servicio of servicios" [value]="servicio.id">{{ servicio.nombre }}</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="fecha_inicio" class="form-label">Fecha y Hora de Inicio</label>
+            <input type="datetime-local" class="form-control bg-dark text-warning" id="fecha_inicio" name="fecha_inicio" [(ngModel)]="nuevaCita.fecha_inicio" required>
+          </div>
+          <div class="mb-3">
+            <label for="fecha_fin" class="form-label">Fecha y Hora de Fin</label>
+            <input type="datetime-local" class="form-control bg-dark text-warning" id="fecha_fin" name="fecha_fin" [(ngModel)]="nuevaCita.fecha_fin" required>
+          </div>
+          <div class="mb-3">
+            <label for="estado" class="form-label">Estado</label>
+            <select class="form-select bg-dark text-warning" id="estado" name="estado" [(ngModel)]="nuevaCita.estado">
+              <option value="pendiente">Pendiente</option>
+              <option value="confirmada">Confirmada</option>
+              <option value="cancelada">Cancelada</option>
+              <option value="completada">Completada</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="notas" class="form-label">Notas</label>
+            <textarea class="form-control bg-dark text-warning" id="notas" name="notas" [(ngModel)]="nuevaCita.notas"></textarea>
+          </div>          
+          <div class="text-end">
+            <button type="button" class="btn btn-outline-danger me-2" (click)="cancelarNuevaCita()">Cancelar</button>
+            <button type="submit" class="btn btn-success">Guardar Cita</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </ng-template>
+
+  <!-- Formulario de Reprogramación de Cita -->
+  <ng-template #formularioReprogramar>
+    <div class="card bg-transparent text-warning border border-warning shadow-lg mt-5">
+      <div class="card-header bg-info text-dark">
+        <h5 class="card-title fw-semibold">Reprogramar Cita</h5>
+      </div>
+      <div class="card-body">
+        <form (ngSubmit)="guardarReprogramacion()">
+          <div class="mb-3">
+            <label for="fecha_inicio" class="form-label">Nueva Fecha y Hora de Inicio</label>
+            <input type="datetime-local" class="form-control bg-dark text-warning" id="fecha_inicio" name="fecha_inicio" [(ngModel)]="nuevaFechaInicioReprogramar" required>
+          </div>
+          <div class="mb-3">
+            <label for="fecha_fin" class="form-label">Nueva Fecha y Hora de Fin</label>
+            <input type="datetime-local" class="form-control bg-dark text-warning" id="fecha_fin" name="fecha_fin" [(ngModel)]="nuevaFechaFinReprogramar" required>
+          </div>
+          <div class="text-end">
+            <button type="button" class="btn btn-outline-danger me-2" (click)="cancelarReprogramacion()">Cancelar</button>
+            <button type="submit" class="btn btn-info text-dark">Guardar Reprogramación</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </ng-template>
 </div>

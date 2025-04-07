@@ -1,181 +1,534 @@
-<div class="container bg-dark text-warning p-4 rounded-3" style="max-width: 900px;">
+<div
+  class="container bg-dark text-warning p-4 rounded-3"
+  style="max-width: 900px"
+>
   <h2 class="text-center mb-4 fw-bold">Gestión de Usuarios</h2>
 
-  <ul class="nav nav-pills mb-3">
-    <li class="nav-item">
-      <a class="nav-link active" id="usuarios-tab" data-bs-toggle="pill" href="#usuarios" (click)="closeForm()">Usuarios</a>
+  <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button
+        class="nav-link active"
+        id="usuarios-tab"
+        data-bs-toggle="pill"
+        data-bs-target="#usuarios"
+        type="button"
+        role="tab"
+        aria-controls="usuarios"
+        aria-selected="true"
+        (click)="closeForm()"
+      >
+        Usuarios
+      </button>
     </li>
-    <li class="nav-item">
-      <a class="nav-link" id="historial-tab" data-bs-toggle="pill" href="#historial" (click)="closeForm()">Historial de Cambios</a>
+    <li class="nav-item" role="presentation">
+      <button
+        class="nav-link"
+        id="historial-tab"
+        data-bs-toggle="pill"
+        data-bs-target="#historial"
+        type="button"
+        role="tab"
+        aria-controls="historial"
+        aria-selected="false"
+        (click)="closeForm()"
+      >
+        Historial de Cambios
+      </button>
     </li>
   </ul>
 
-  <div class="tab-content">
-    <div class="tab-pane fade show active" id="usuarios">
-      <button class="btn btn-success mb-4" (click)="openAddUserForm()" aria-label="Agregar Nuevo Usuario">Agregar Nuevo Usuario</button>
+  <div class="tab-content" id="pills-tabContent">
+    <div
+      class="tab-pane fade show active"
+      id="usuarios"
+      role="tabpanel"
+      aria-labelledby="usuarios-tab"
+    >
+      <button
+        class="btn btn-success mb-4"
+        (click)="openAddUserForm()"
+        aria-label="Agregar Nuevo Usuario"
+      >
+        <i class="bi bi-plus-circle"></i> Agregar Nuevo Usuario
+      </button>
 
-      <div class="mb-3">
-        <input [(ngModel)]="searchQuery" type="text" class="form-control" placeholder="Buscar por nombre de usuario o correo...">
+      <div class="row g-3 mb-3 align-items-end">
+        <div class="col-md-4">
+          <label for="searchUser" class="form-label text-white">Buscar:</label>
+          <input
+            [(ngModel)]="searchQuery"
+            (ngModelChange)="applyFiltersAndPagination()"
+            type="text"
+            class="form-control"
+            id="searchUser"
+            placeholder="Nombre o correo..."
+          />
+        </div>
+        <div class="col-md-4">
+          <label for="rolFilter" class="form-label text-white"
+            >Filtrar por Rol:</label
+          >
+          <select
+            [(ngModel)]="filterRol"
+            (ngModelChange)="applyFiltersAndPagination()"
+            class="form-select"
+            id="rolFilter"
+          >
+            <option value="all">Todos</option>
+            <option *ngFor="let role of availableRoles" [value]="role">
+              {{ role | titlecase }}
+            </option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label text-white d-block mb-2"
+            >Filtrar por Estado:</label
+          >
+          <div
+            class="btn-group"
+            role="group"
+            aria-label="Filtro de estado de usuario"
+          >
+            <button
+              type="button"
+              class="btn btn-sm"
+              [class.btn-primary]="userFilterStatus === 'todos'"
+              [class.btn-outline-secondary]="userFilterStatus !== 'todos'"
+              (click)="userFilterStatus = 'todos'; applyFiltersAndPagination()"
+            >
+              Todos
+            </button>
+            <button
+              type="button"
+              class="btn btn-sm"
+              [class.btn-success]="userFilterStatus === 'activos'"
+              [class.btn-outline-secondary]="userFilterStatus !== 'activos'"
+              (click)="
+                userFilterStatus = 'activos'; applyFiltersAndPagination()
+              "
+            >
+              Activos
+            </button>
+            <button
+              type="button"
+              class="btn btn-sm"
+              [class.btn-danger]="userFilterStatus === 'inactivos'"
+              [class.btn-outline-secondary]="userFilterStatus !== 'inactivos'"
+              (click)="
+                userFilterStatus = 'inactivos'; applyFiltersAndPagination()
+              "
+            >
+              Inactivos
+            </button>
+          </div>
+        </div>
       </div>
-      <div class="mb-3">
-        <label for="rol" class="form-label text-white">Filtrar por Rol:</label>
-        <select [(ngModel)]="filterRol" class="form-control" id="rol">
-          <option value="all">Todos</option>
-          <option value="admin">Administrador</option>
-          <option value="barbero">Barbero</option>
-          <option value="usuario">Usuario</option>
-        </select>
+      <div *ngIf="isLoading" class="text-center my-3">
+        <div class="spinner-border text-warning" role="status">
+          <span class="visually-hidden">Cargando...</span>
+        </div>
+      </div>
+      <div *ngIf="loadingError && !isLoading" class="alert alert-danger">
+        {{ loadingError }}
       </div>
 
-      <div class="mb-3">
-        <button class="btn btn-outline-primary" (click)="userFilterStatus = 'todos'" aria-label="Mostrar todos los usuarios">Todos</button>
-        <button class="btn btn-outline-success" (click)="userFilterStatus = 'activos'" aria-label="Mostrar usuarios activos">Activos</button>
-        <button class="btn btn-outline-danger" (click)="userFilterStatus = 'inactivos'" aria-label="Mostrar usuarios inactivos">Inactivos</button>
+      <div class="table-responsive" *ngIf="!isLoading && !loadingError">
+        <table class="table table-dark table-bordered table-hover">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre de Usuario</th>
+              <th>Correo</th>
+              <th>Teléfono</th>
+              <th>Rol</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="filteredUsers.length === 0">
+              <td colspan="7" class="text-center">
+                No se encontraron usuarios con los filtros aplicados.
+              </td>
+            </tr>
+            <tr *ngFor="let user of filteredUsers">
+              <td>{{ user.id }}</td>
+              <td>{{ user.username }}</td>
+              <td>{{ user.email }}</td>
+              <td>{{ user.telefono || "-" }}</td>
+              <td>{{ user.rol | titlecase }}</td>
+              <td>
+                <span
+                  class="badge"
+                  [ngClass]="{
+                    'bg-success': user.estado === 'activo',
+                    'bg-danger': user.estado === 'inactivo'
+                  }"
+                >
+                  {{ user.estado | titlecase }}
+                </span>
+              </td>
+              <td>
+                <div class="btn-group btn-group-sm" role="group">
+                  <button
+                    type="button"
+                    class="btn"
+                    [ngClass]="{
+                      'btn-outline-danger': user.estado === 'activo',
+                      'btn-outline-success': user.estado === 'inactivo'
+                    }"
+                    (click)="toggleUserState(user)"
+                    title="{{
+                      user.estado === 'activo' ? 'Desactivar' : 'Activar'
+                    }} Usuario"
+                  >
+                    <i
+                      class="bi"
+                      [ngClass]="{
+                        'bi-toggle-off': user.estado === 'activo',
+                        'bi-toggle-on': user.estado === 'inactivo'
+                      }"
+                    ></i>
+                    {{ user.estado === "activo" ? "Desac." : "Activar" }}
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-outline-primary"
+                    (click)="toggleEditMode(user)"
+                    title="Editar Usuario"
+                  >
+                    <i class="bi bi-pencil-square"></i> Editar
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
-      <table class="table table-dark table-bordered">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Nombre de Usuario</th>
-            <th>Correo</th>
-            <th>Teléfono</th>
-            <th>Rol</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let user of filteredUsers">
-            <td>{{ user.id }}</td>
-            <td>{{ user.username }}</td>
-            <td>{{ user.email }}</td>
-            <td>{{ user.telefono }}</td>
-            <td>{{ user.rol }}</td>
-            <td>
-              <button class="btn" [ngClass]="{'btn-success': user.estado === 'activo', 'btn-danger': user.estado === 'inactivo'}" (click)="toggleUserState(user)" aria-label="Cambiar estado del usuario">
-                {{ user.estado === 'activo' ? 'Desactivar' : 'Activar' }}
-              </button>
-              <button class="btn btn-primary btn-sm" (click)="toggleEditMode(user)" aria-label="Editar usuario">Editar</button>
-              <button *ngIf="user.estado === 'inactivo'" class="btn btn-secondary btn-sm" (click)="restoreUser(user)" aria-label="Restaurar usuario">Restaurar</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div class="d-flex justify-content-between">
-        <button class="btn btn-secondary" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)" aria-label="Página anterior">Anterior</button>
+      <div
+        class="d-flex justify-content-between mt-3"
+        *ngIf="!isLoading && !loadingError && totalPages > 1"
+      >
+        <button
+          class="btn btn-secondary"
+          [disabled]="currentPage === 1"
+          (click)="goToPage(currentPage - 1)"
+          aria-label="Página anterior"
+        >
+          Anterior
+        </button>
         <span> Página {{ currentPage }} de {{ totalPages }} </span>
-        <button class="btn btn-secondary" [disabled]="currentPage === totalPages" (click)="goToPage(currentPage + 1)" aria-label="Página siguiente">Siguiente</button>
+        <button
+          class="btn btn-secondary"
+          [disabled]="currentPage === totalPages"
+          (click)="goToPage(currentPage + 1)"
+          aria-label="Página siguiente"
+        >
+          Siguiente
+        </button>
       </div>
     </div>
 
-    <div class="tab-pane fade" id="historial">
+    <div
+      class="tab-pane fade"
+      id="historial"
+      role="tabpanel"
+      aria-labelledby="historial-tab"
+    >
       <h3>Filtrar Historial de Cambios</h3>
-
-      <div class="mb-3">
-        <label for="startDate" class="form-label text-white">Fecha y Hora de Inicio:</label>
-        <input [(ngModel)]="startTime" type="datetime-local" class="form-control" id="startDate">
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <label for="startDate" class="form-label text-white"
+            >Fecha y Hora de Inicio:</label
+          >
+          <input
+            [(ngModel)]="startTime"
+            type="datetime-local"
+            class="form-control"
+            id="startDate"
+          />
+        </div>
+        <div class="col-md-6">
+          <label for="endDate" class="form-label text-white"
+            >Fecha y Hora de Fin:</label
+          >
+          <input
+            [(ngModel)]="endTime"
+            type="datetime-local"
+            class="form-control"
+            id="endDate"
+          />
+        </div>
+        <div class="col-md-6">
+          <label for="filterDate" class="form-label text-white"
+            >Filtrar por Fecha:</label
+          >
+          <input
+            [(ngModel)]="filterDate"
+            type="date"
+            class="form-control"
+            id="filterDate"
+          />
+        </div>
+        <div class="col-md-6">
+          <label for="searchHistory" class="form-label text-white"
+            >Buscar en historial:</label
+          >
+          <input
+            [(ngModel)]="searchQuery"
+            type="text"
+            class="form-control"
+            id="searchHistory"
+            placeholder="Buscar..."
+          />
+        </div>
+        <div class="col-12">
+          <label class="form-label text-white d-block mb-2"
+            >Filtrar por Acción:</label
+          >
+          <div
+            class="btn-group btn-group-sm"
+            role="group"
+            aria-label="Filtro de acción del historial"
+          >
+            <button
+              type="button"
+              class="btn btn-outline-primary"
+              (click)="changeLogFilter = 'todos'"
+            >
+              Todos
+            </button>
+            <button
+              type="button"
+              class="btn btn-outline-primary"
+              (click)="changeLogFilter = 'creacion'"
+            >
+              Creado
+            </button>
+            <button
+              type="button"
+              class="btn btn-outline-primary"
+              (click)="changeLogFilter = 'actualizacion'"
+            >
+              Actualizado
+            </button>
+            <button
+              type="button"
+              class="btn btn-outline-primary"
+              (click)="changeLogFilter = 'cambio_estado'"
+            >
+              Estado
+            </button>
+          </div>
+        </div>
       </div>
-      <div class="mb-3">
-        <label for="endDate" class="form-label text-white">Fecha y Hora de Fin:</label>
-        <input [(ngModel)]="endTime" type="datetime-local" class="form-control" id="endDate">
-      </div>
-      <div class="mb-3">
-        <label for="filterDate" class="form-label text-white">Filtrar por Fecha:</label>
-        <input [(ngModel)]="filterDate" type="date" class="form-control" id="filterDate">
+
+      <div *ngIf="changeLog.length === 0" class="text-center text-white my-3">
+        <p>No hay registros disponibles para mostrar.</p>
       </div>
 
-      <div class="mb-3">
-        <input [(ngModel)]="searchQuery" type="text" class="form-control" placeholder="Buscar en historial...">
+      <div class="table-responsive" *ngIf="changeLog.length > 0">
+        <table class="table table-dark table-bordered">
+          <thead>
+            <tr>
+              <th>Hora</th>
+              <th>Fecha</th>
+              <th>Usuario Afectado</th>
+              <th>Acción</th>
+              <th>Modificado Por</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let log of filteredChangeLogPaginated">
+              <td>{{ log.hora | date : "shortTime" }}</td>
+              <td>{{ log.fecha | date : "dd/MM/yyyy" }}</td>
+              <td>{{ log.username }}</td>
+              <td>{{ log.action | titlecase }}</td>
+              <td>{{ log.modifico }}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
-      <div class="mb-3">
-        <button class="btn btn-outline-primary" (click)="changeLogFilter = 'todos'" aria-label="Mostrar todos los registros del historial">Todos</button>
-        <button class="btn btn-outline-primary" (click)="changeLogFilter = 'creado'" aria-label="Mostrar registros de usuarios creados">Creado</button>
-        <button class="btn btn-outline-primary" (click)="changeLogFilter = 'actualizado'" aria-label="Mostrar registros de usuarios actualizados">Actualizado</button>
-        <button class="btn btn-outline-primary" (click)="changeLogFilter = 'cambio de estado'" aria-label="Mostrar registros de cambios de estado">Estado cambiado</button>
-      </div>
-
-      <div *ngIf="changeLog.length === 0">
-        <p class="text-center text-white">No hay registros disponibles</p>
-      </div>
-
-      <table class="table table-dark table-bordered">
-        <thead>
-          <tr>
-            <th>Hora</th>
-            <th>Fecha</th>
-            <th>Usuario</th>
-            <th>Acción</th>
-            <th>Modificó</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let log of filteredChangeLogPaginated">
-            <td>{{ log.hora }}</td>
-            <td>{{ log.fecha }}</td>
-            <td>{{ log.username }}</td>
-            <td>{{ log.action }}</td>
-            <td>{{ log.modifico }}</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div class="d-flex justify-content-between">
-        <button class="btn btn-secondary" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)" aria-label="Página anterior del historial">Anterior</button>
-        <span> Página {{ currentPage }} de {{ totalPages }} </span>
-        <button class="btn btn-secondary" [disabled]="currentPage === totalPages" (click)="goToPage(currentPage + 1)" aria-label="Página siguiente del historial">Siguiente</button>
-      </div>
-
-      <div class="mb-3">
-        <label for="pageSize" class="form-label text-white">Logs por página:</label>
-        <select [(ngModel)]="pageSize" (change)="changePageSize(pageSize)" class="form-control" id="pageSize">
-          <option value="10">10</option>
-          <option value="50">50</option>
-          <option value="100">100</option>
-        </select>
+      <div
+        class="d-flex justify-content-between align-items-center mt-3"
+        *ngIf="changeLog.length > 0"
+      >
+        <div class="col-auto">
+          <label for="pageSize" class="form-label text-white me-2"
+            >Registros por página:</label
+          >
+          <select
+            [(ngModel)]="pageSize"
+            (change)="changePageSize($any($event.target).value)"
+            class="form-select form-select-sm d-inline-block w-auto"
+            id="pageSize"
+          >
+            <option value="10">10</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+          </select>
+        </div>
+        <div class="col-auto text-center">
+          <span *ngIf="totalPages > 0">
+            Página {{ currentPage }} de {{ totalPages }}
+          </span>
+        </div>
+        <div class="col-auto btn-group btn-group-sm">
+          <button
+            class="btn btn-secondary"
+            [disabled]="currentPage === 1"
+            (click)="goToPage(currentPage - 1)"
+          >
+            Anterior
+          </button>
+          <button
+            class="btn btn-secondary"
+            [disabled]="currentPage === totalPages"
+            (click)="goToPage(currentPage + 1)"
+          >
+            Siguiente
+          </button>
+        </div>
       </div>
     </div>
   </div>
+  <div
+    *ngIf="showForm"
+    class="formulario-popup position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
+    style="background-color: rgba(0, 0, 0, 0.7); z-index: 1050"
+  >
+    <div
+      class="bg-dark p-4 rounded-3 shadow-lg text-white"
+      style="width: 90%; max-width: 500px"
+    >
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="text-warning mb-0">
+          {{ isEditing ? "Editar Usuario" : "Agregar Nuevo Usuario" }}
+        </h3>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          aria-label="Cerrar"
+          (click)="closeForm()"
+        ></button>
+      </div>
 
-  <div *ngIf="showForm" class="formulario-popup">
-    <div class="bg-dark p-4 rounded-3">
-      <h3>{{ isEditing ? 'Editar Usuario' : 'Agregar Nuevo Usuario' }}</h3>
-      <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
-      <form (ngSubmit)="isEditing ? saveUserChanges() : addUser()">
+      <div *ngIf="errorMessage" class="alert alert-danger">
+        {{ errorMessage }}
+      </div>
+
+      <form
+        #userForm="ngForm"
+        (ngSubmit)="isEditing ? saveUserChanges() : addUser()"
+      >
         <div class="mb-3" *ngIf="isEditing">
-          <label for="id" class="form-label text-white">ID:</label>
-          <input [(ngModel)]="selectedUser.id" type="text" class="form-control" id="id" readonly>
+          <label for="userIdForm" class="form-label">ID:</label>
+          <input
+            [(ngModel)]="selectedUser.id"
+            name="userId"
+            type="text"
+            class="form-control"
+            id="userIdForm"
+            readonly
+          />
         </div>
         <div class="mb-3">
-          <label for="username" class="form-label text-white">Nombre de Usuario:</label>
-          <input [(ngModel)]="selectedUser.username" type="text" class="form-control" id="username" required>
+          <label for="usernameForm" class="form-label"
+            >Nombre de Usuario:</label
+          >
+          <input
+            [(ngModel)]="selectedUser.username"
+            name="username"
+            type="text"
+            class="form-control"
+            id="usernameForm"
+            required
+          />
         </div>
         <div class="mb-3">
-          <label for="email" class="form-label text-white">Correo:</label>
-          <input [(ngModel)]="selectedUser.email" type="email" class="form-control" id="email" required>
+          <label for="emailForm" class="form-label">Correo:</label>
+          <input
+            [(ngModel)]="selectedUser.email"
+            name="email"
+            type="email"
+            class="form-control"
+            id="emailForm"
+            required
+          />
         </div>
         <div class="mb-3">
-          <label for="telefono" class="form-label text-white">Teléfono:</label>
-          <input [(ngModel)]="selectedUser.telefono" type="text" class="form-control" id="telefono" required>
+          <label for="telefonoForm" class="form-label">Teléfono:</label>
+          <input
+            [(ngModel)]="selectedUser.telefono"
+            name="telefono"
+            type="text"
+            class="form-control"
+            id="telefonoForm"
+          />
         </div>
         <div class="mb-3">
-          <label for="rol" class="form-label text-white">Rol:</label>
-          <select [(ngModel)]="selectedUser.rol" class="form-control" id="rol">
-            <option value="admin">Administrador</option>
-            <option value="barbero">Barbero</option>
-            <option value="usuario">Usuario</option>
+          <label for="rolForm" class="form-label">Rol:</label>
+          <select
+            [(ngModel)]="selectedUser.rol"
+            name="rol"
+            class="form-select"
+            id="rolForm"
+            required
+          >
+            <option value="" disabled selected>-- Seleccione Rol --</option>
+            <option *ngFor="let role of availableRoles" [value]="role">
+              {{ role | titlecase }}
+            </option>
           </select>
         </div>
-        <div class="mb-3" *ngIf="selectedUser.rol === 'admin' || selectedUser.rol === 'barbero'">
-          <label for="token" class="form-label text-white">Token:</label>
-          <input [(ngModel)]="selectedUser.token" type="text" class="form-control" id="token">
+        <div
+          class="mb-3"
+          *ngIf="selectedUser.rol === 'admin' || selectedUser.rol === 'barbero'"
+        >
+          <label for="tokenForm" class="form-label">Token:</label>
+          <input
+            [(ngModel)]="selectedUser.token"
+            name="token"
+            type="text"
+            class="form-control"
+            id="tokenForm"
+          />
         </div>
-        <div class="mb-3">
-          <button type="submit" class="btn btn-success" aria-label="Guardar cambios del usuario">{{ isEditing ? 'Actualizar Usuario' : 'Agregar Usuario' }}</button>
-          <button type="button" class="btn btn-secondary" (click)="isEditing ? cancelEdit() : cancelAddUser()" aria-label="Cancelar la operación">Cancelar</button>
+        <div class="mb-3" *ngIf="!isEditing">
+          <label for="passwordForm" class="form-label">Contraseña:</label>
+          <input
+            type="password"
+            [(ngModel)]="selectedUser.password"
+            name="password"
+            class="form-control"
+            id="passwordForm"
+            required
+            placeholder="Crear contraseña para el usuario"
+          />
+        </div>
+
+        <div class="d-flex justify-content-end pt-3">
+          <button
+            type="button"
+            class="btn btn-secondary me-2"
+            (click)="closeForm()"
+            aria-label="Cancelar"
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            class="btn btn-success"
+            [disabled]="userForm.invalid"
+            aria-label="Guardar cambios del usuario"
+          >
+            {{ isEditing ? "Actualizar Usuario" : "Agregar Usuario" }}
+          </button>
         </div>
       </form>
     </div>
   </div>
 </div>
+```
