@@ -57,3 +57,18 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+
+El archivo `index.php` debe cargarse en la ruta `Xammp/htdocs/Barberia` del equipo para que funcione el API.
+
+Adicionalmente, el archivo `barberiamvp` contiene todo el query necesario para crear la base de datos en Xammp.
+
+## Configuración del API
+
+El archivo `index.php` debe cargarse en la ruta `Xammp/htdocs/Barberia` del equipo para que funcione el API.
+
+## Base de Datos
+
+El archivo `barberiamvp` contiene todo el query necesario para crear la base de datos en Xammp.
+
+
+
