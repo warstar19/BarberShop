@@ -23,6 +23,18 @@ if (isset($_GET['estado_pago'])) {
     $params[':estado_pago'] = $_GET['estado_pago'];
 }
 
+// Filtrado por notas
+if (isset($_GET['notas'])) {
+    $whereClauses[] = "notas LIKE :notas";
+    $params[':notas'] = '%' . $_GET['notas'] . '%';
+}
+
+// Filtrado por fecha_creacion
+if (isset($_GET['fecha_creacion'])) {
+    $whereClauses[] = "fecha_creacion LIKE :fecha_creacion";
+    $params[':fecha_creacion'] = '%' . $_GET['fecha_creacion'] . '%';
+}
+
 $sql = "SELECT * FROM historial_financiero";
 
 if (!empty($whereClauses)) {
