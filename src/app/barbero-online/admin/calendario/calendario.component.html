@@ -46,37 +46,37 @@
         </div>
       </div>
 
-   <!-- Vista de Semana -->
-   <div *ngSwitchCase="CalendarView.Week" class="week-view">
-    <div class="week-header">
-      <div class="hour-column"></div>
-      <div class="day-header" *ngFor="let day of weekDays; let i = index"
-           [class.today]="isToday(day)"
-           [class.selected]="isSelected(day)"
-           (click)="selectDay({date: day, events: getDayEvents(day)})">
-        {{ spanishDayNames[i] }} {{ day | date: 'd' }}
-      </div>
-    </div>
-    <div class="week-grid-container">
-      <div class="week-grid">
-        <div class="hour-row" *ngFor="let hour of hours">
-          <div class="hour-label">{{ hour }}:00</div>
-          <div class="day-cell" *ngFor="let day of weekDays"
-               [class.today]="isToday(day)">
-            <div class="hour-events-container">
-              <div class="hour-events">
-                <div *ngFor="let event of getEventsForHour(day, hour)" class="event-item"
-                     [style.backgroundColor]="event.color?.primary"
-                     (click)="selectEvent(event); $event.stopPropagation()">
-                  {{ event.title }}
+      <!-- Vista de Semana -->
+      <div *ngSwitchCase="CalendarView.Week" class="week-view">
+        <div class="week-header">
+          <div class="hour-column"></div>
+          <div class="day-header" *ngFor="let day of weekDays; let i = index"
+               [class.today]="isToday(day)"
+               [class.selected]="isSelected(day)"
+               (click)="selectDay({date: day, events: getDayEvents(day)})">
+            {{ spanishDayNames[i] }} {{ day | date: 'd' }}
+          </div>
+        </div>
+        <div class="week-grid-container">
+          <div class="week-grid">
+            <div class="hour-row" *ngFor="let hour of hours">
+              <div class="hour-label">{{ hour }}:00</div>
+              <div class="day-cell" *ngFor="let day of weekDays"
+                   [class.today]="isToday(day)">
+                <div class="hour-events-container">
+                  <div class="hour-events">
+                    <div *ngFor="let event of getEventsForHour(day, hour)" class="event-item"
+                         [style.backgroundColor]="event.color?.primary"
+                         (click)="selectEvent(event); $event.stopPropagation()">
+                      {{ event.title }}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </div>
 
       <!-- Vista de Día -->
       <div *ngSwitchCase="CalendarView.Day" class="day-view">

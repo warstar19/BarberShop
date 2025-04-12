@@ -49,42 +49,22 @@
               <strong><i class="bi bi-card-list me-2"></i>Notas:</strong>
               {{ cita.notas }}
             </p>
-            <div
-              class="d-flex justify-content-end gap-2"
-              *ngIf="cita.estado === 'pendiente' || cita.estado === 'confirmada'"
-            >
-              <button
-                *ngIf="cita.estado === 'pendiente'"
-                class="btn btn-sm btn-outline-warning fw-semibold"
-                (click)="confirmCita(cita)"
-              >
+            <div class="d-flex justify-content-end gap-2" *ngIf="cita.estado === 'pendiente' || cita.estado === 'confirmada'">
+              <button *ngIf="cita.estado === 'pendiente'" class="btn btn-sm btn-outline-warning fw-semibold" (click)="confirmCita(cita)">
                 <i class="bi bi-check-circle me-1"></i> Confirmar
               </button>
-              <button
-                class="btn btn-sm btn-outline-danger fw-semibold"
-                (click)="cancelCita(cita)"
-              >
+              <button class="btn btn-sm btn-outline-danger fw-semibold" (click)="cancelCita(cita)">
                 <i class="bi bi-x-circle me-1"></i> {{ cita.estado === 'pendiente' ? 'Rechazar' : 'Cancelar' }}
               </button>
-              <button
-                class="btn btn-sm btn-outline-info fw-semibold"
-                (click)="rescheduleCita(cita)"
-              >
+              <button class="btn btn-sm btn-outline-info fw-semibold" (click)="rescheduleCita(cita)">
                 <i class="bi bi-calendar-event me-1"></i> Reprogramar
               </button>
             </div>
           </div>
-        </div>        
+        </div>
       </div>
     </div>
   </div>
-
-  <!-- Mensaje si no hay citas programadas -->
-  <ng-template #noCitas>
-    <div class="alert alert-warning text-center mt-5 fs-5" role="alert">
-      <i class="bi bi-info-circle me-2"></i> No hay citas programadas.
-    </div>
-  </ng-template>
 
   <!-- Mostrar formularios dependiendo de las condiciones -->
   <ng-template #mostrarFormularios>
@@ -103,29 +83,29 @@
           <div class="mb-3">
             <label for="cliente_id" class="form-label">Cliente</label>
             <select class="form-select bg-dark text-warning" id="cliente_id" name="cliente_id" [(ngModel)]="nuevaCita.cliente_id" required>
-              <option value="" disabled selected>Seleccionar Cliente</option>
-              <option *ngFor="let cliente of clientes" [value]="cliente.id">{{ cliente.username }}</option>
+              <option [ngValue]="0" disabled>Seleccionar Cliente</option>
+              <option *ngFor="let cliente of clientes" [ngValue]="cliente.id">{{ cliente.username }}</option>
             </select>
           </div>
           <div class="mb-3">
             <label for="barbero_id" class="form-label">Barbero</label>
             <select class="form-select bg-dark text-warning" id="barbero_id" name="barbero_id" [(ngModel)]="nuevaCita.barbero_id" required>
-              <option value="" disabled selected>Seleccionar Barbero</option>
-              <option *ngFor="let barbero of barberos" [value]="barbero.id">{{ barbero.username }}</option>
+              <option [ngValue]="0" disabled>Seleccionar Barbero</option>
+              <option *ngFor="let barbero of barberos" [ngValue]="barbero.id">{{ barbero.username }}</option>
             </select>
           </div>
           <div class="mb-3">
             <label for="sucursal_id" class="form-label">Sucursal</label>
             <select class="form-select bg-dark text-warning" id="sucursal_id" name="sucursal_id" [(ngModel)]="nuevaCita.sucursal_id" (change)="cargarServiciosPorSucursal(nuevaCita.sucursal_id)" required>
-              <option value="" disabled selected>Seleccionar Sucursal</option>
-              <option *ngFor="let sucursal of sucursales" [value]="sucursal.id">{{ sucursal.nombre }}</option>
+              <option [ngValue]="0" disabled>Seleccionar Sucursal</option>
+              <option *ngFor="let sucursal of sucursales" [ngValue]="sucursal.id">{{ sucursal.nombre }}</option>
             </select>
           </div>
           <div class="mb-3">
             <label for="servicio_id" class="form-label">Servicio</label>
             <select class="form-select bg-dark text-warning" id="servicio_id" name="servicio_id" [(ngModel)]="nuevaCita.servicio_id" required>
-              <option value="" disabled selected>Seleccionar Servicio</option>
-              <option *ngFor="let servicio of servicios" [value]="servicio.id">{{ servicio.nombre }}</option>
+              <option [ngValue]="0" disabled>Seleccionar Servicio</option>
+              <option *ngFor="let servicio of servicios" [ngValue]="servicio.id">{{ servicio.nombre }}</option>
             </select>
           </div>
           <div class="mb-3">
@@ -137,18 +117,9 @@
             <input type="datetime-local" class="form-control bg-dark text-warning" id="fecha_fin" name="fecha_fin" [(ngModel)]="nuevaCita.fecha_fin" required>
           </div>
           <div class="mb-3">
-            <label for="estado" class="form-label">Estado</label>
-            <select class="form-select bg-dark text-warning" id="estado" name="estado" [(ngModel)]="nuevaCita.estado">
-              <option value="pendiente">Pendiente</option>
-              <option value="confirmada">Confirmada</option>
-              <option value="cancelada">Cancelada</option>
-              <option value="completada">Completada</option>
-            </select>
-          </div>
-          <div class="mb-3">
             <label for="notas" class="form-label">Notas</label>
-            <textarea class="form-control bg-dark text-warning" id="notas" name="notas" [(ngModel)]="nuevaCita.notas"></textarea>
-          </div>          
+            <textarea class="form-control bg-dark text-warning" id="notas" name="notas" [(ngModel)]="nuevaCita.notas" placeholder="Agregar nota"></textarea>
+          </div>
           <div class="text-end">
             <button type="button" class="btn btn-outline-danger me-2" (click)="cancelarNuevaCita()">Cancelar</button>
             <button type="submit" class="btn btn-success">Guardar Cita</button>

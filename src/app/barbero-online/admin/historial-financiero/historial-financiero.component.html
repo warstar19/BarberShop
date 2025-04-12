@@ -1,56 +1,69 @@
 <div class="container bg-dark text-warning p-4 rounded-3" style="max-width: 900px;">
   <h2 class="text-center mb-4 fw-bold">Historial Financiero</h2>
 
-  <!-- Filtros de búsqueda -->
   <div class="row mb-3">
-    <div class="col-md-4">
-      <input [(ngModel)]="searchQuery" (input)="applyFilters()" type="text" class="form-control" placeholder="Buscar por cliente, barbero o sucursal...">
-    </div>
-    <div class="col-md-3">
-      <input [(ngModel)]="filterTime" (input)="applyFilters()" type="time" class="form-control">
-    </div>
-    <div class="col-md-3">
-      <input [(ngModel)]="filterDate" (input)="applyFilters()" type="date" class="form-control">
-    </div>
-    <div class="col-md-2">
-      <select [(ngModel)]="itemsPerPage" (change)="applyFilters()" class="form-select">
-        <option value="10">10</option>
-        <option value="50">50</option>
-        <option value="100">100</option>
-      </select>
-    </div>
+      <div class="col-md-3">
+          <label for="searchQuery" class="form-label">Buscar (notas):</label>
+          <input [(ngModel)]="searchQuery" (input)="applyFilters()" type="text" id="searchQuery" class="form-control" placeholder="Buscar por notas...">
+      </div>
+      <div class="col-md-2">
+          <label for="filterDate" class="form-label">Fecha:</label>
+          <input [(ngModel)]="filterDate" (input)="applyFilters()" type="date" id="filterDate" class="form-control">
+      </div>
+      <div class="col-md-2">
+          <label for="filterCitaId" class="form-label">Cita ID:</label>
+          <input [(ngModel)]="filterCitaId" (input)="applyFilters()" type="number" id="filterCitaId" class="form-control" placeholder="Cita ID">
+      </div>
+      <div class="col-md-2">
+          <label for="filterMetodoPago" class="form-label">Método de Pago:</label>
+          <select [(ngModel)]="filterMetodoPago" (change)="applyFilters()" id="filterMetodoPago" class="form-select">
+              <option value="">Todos</option>
+              <option *ngFor="let metodo of metodosPago" [value]="metodo">{{ metodo }}</option>
+          </select>
+      </div>
+      <div class="col-md-2">
+          <label for="filterEstadoPago" class="form-label">Estado de Pago:</label>
+          <select [(ngModel)]="filterEstadoPago" (change)="applyFilters()" id="filterEstadoPago" class="form-select">
+              <option value="">Todos</option>
+              <option *ngFor="let estado of estadosPago" [value]="estado">{{ estado }}</option>
+          </select>
+      </div>
+      <div class="col-md-1">
+          <label for="itemsPerPage" class="form-label">Mostrar:</label>
+          <select [(ngModel)]="itemsPerPage" (change)="applyFilters()" id="itemsPerPage" class="form-select">
+              <option value="10">10</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+          </select>
+      </div>
   </div>
 
-  <!-- Tabla de citas completadas -->
   <table class="table table-dark table-bordered">
-    <thead>
-      <tr>
-        <th>Hora</th>
-        <th>Fecha</th>
-        <th>Cliente</th>
-        <th>Barbero</th>
-        <th>Tiempo</th>
-        <th>Monto</th>
-        <th>Sucursal</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let cita of filteredCitas">
-        <td>{{ cita.hora }}</td>
-        <td>{{ cita.fecha }}</td>
-        <td>{{ cita.cliente }}</td>
-        <td>{{ cita.barbero }}</td>
-        <td>{{ cita.tiempo }}</td>
-        <td>{{ cita.monto | currency:'USD' }}</td>
-        <td>{{ cita.sucursal }}</td>
-      </tr>
-    </tbody>
+      <thead>
+          <tr>
+              <th>Cita ID</th>
+              <th>Monto</th>
+              <th>Método de Pago</th>
+              <th>Estado de Pago</th>
+              <th>Notas</th>
+              <th>Fecha de Creación</th>
+          </tr>
+      </thead>
+      <tbody>
+          <tr *ngFor="let historial of filteredCitas">
+              <td>{{ historial.cita_id }}</td>
+              <td>{{ historial.monto | currency:'USD' }}</td>
+              <td>{{ historial.metodo_pago }}</td>
+              <td>{{ historial.estado_pago }}</td>
+              <td>{{ historial.notas }}</td>
+              <td>{{ historial.fecha_creacion }}</td>
+          </tr>
+      </tbody>
   </table>
 
-  <!-- Paginación -->
   <div class="d-flex justify-content-between">
-    <button class="btn btn-secondary" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)">Anterior</button>
-    <span> Página {{ currentPage }} de {{ totalPages }} </span>
-    <button class="btn btn-secondary" [disabled]="currentPage === totalPages" (click)="goToPage(currentPage + 1)">Siguiente</button>
+      <button class="btn btn-secondary" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)">Anterior</button>
+      <span> Página {{ currentPage }} de {{ totalPages }} </span>
+      <button class="btn btn-secondary" [disabled]="currentPage === totalPages" (click)="goToPage(currentPage + 1)">Siguiente</button>
   </div>
 </div>

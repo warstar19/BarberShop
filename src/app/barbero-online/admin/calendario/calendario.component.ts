@@ -4,9 +4,9 @@ import {
   addDays, addMonths, addWeeks,
   isSameDay, isSameMonth,
   startOfDay, startOfMonth, startOfWeek,
-  subDays, subMonths, subWeeks,
-  format
+  subDays, subMonths, subWeeks
 } from 'date-fns';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 interface Day {
   date: Date;
@@ -15,6 +15,7 @@ interface Day {
 
 interface CalendarEvent {
   start: Date;
+  end: Date;
   title: string;
   color?: {
     primary: string;
@@ -23,7 +24,10 @@ interface CalendarEvent {
   meta?: {
     cliente: string;
     servicio: string;
-    tiempo: string;
+    tiempo: string;  // Duration already calculated
+    hora: string;
+    sucursal: string;
+    estado: string;
   };
 }
 
@@ -36,7 +40,7 @@ enum CalendarView {
 @Component({
   selector: 'app-calendario',
   standalone: true,
-  imports: [CommonModule, DatePipe],
+  imports: [CommonModule, DatePipe, HttpClientModule],
   templateUrl: './calendario.component.html',
   styleUrls: ['./calendario.component.css']
 })
@@ -53,12 +57,14 @@ export class CalendarioComponent implements OnInit {
   hours: number[] = Array.from({ length: 24 }, (_, i) => i);
   spanishDayNames = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 
+  constructor(private http: HttpClient) {}
+
   get viewTitleFormat(): string {
     switch (this.view) {
       case CalendarView.Month:
         return 'MMMM yyyy';
       case CalendarView.Week:
-        return "MMMM d, yyyy";
+        return 'MMMM d, yyyy';
       case CalendarView.Day:
         return 'fullDate';
       default:
@@ -76,53 +82,54 @@ export class CalendarioComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadEvents();
-    this.generateCalendar();
-    this.selectToday();
   }
 
   loadEvents(): void {
-    this.events = [
-      {
-        start: addDays(startOfDay(new Date()), 1),
-        title: 'Cita con Juan Pérez',
-        color: { primary: '#ffc107', secondary: '#fff3cd' },
-        meta: {
-          cliente: 'Juan Pérez',
-          servicio: 'Corte de cabello',
-          tiempo: '30 minutos'
-        }
+    this.http.get<any[]>('http://localhost/barberia/backend/api/citas/read_cita.php').subscribe(
+      (data) => {
+        this.events = data.map(cita => {
+          const fechaInicio = new Date(cita.fecha_inicio);
+          const fechaFin = new Date(cita.fecha_fin);
+
+          const cliente = `Cliente ${cita.cliente_id}`;  // Ajustar según tu lógica
+          const servicio = cita.servicio_id ? `Servicio ${cita.servicio_id}` : 'Servicio desconocido';
+          const sucursal = cita.sucursal_id ? `Sucursal ${cita.sucursal_id}` : 'Sucursal desconocida';
+          const estado = cita.estado || 'No definido';
+          const tiempo = this.calculateDuration(fechaInicio, fechaFin);
+
+          return {
+            start: fechaInicio,
+            end: fechaFin,
+            title: `Cita con ${cliente}`,
+            color: {
+              primary: cita.color_primario || '#007bff',
+              secondary: cita.color_secundario || '#cce5ff'
+            },
+            meta: {
+              cliente: cliente,
+              servicio: servicio,
+              tiempo: tiempo,
+              hora: fechaInicio.toLocaleTimeString(),
+              sucursal: sucursal,
+              estado: estado
+            }
+          };
+        });
+        this.generateCalendar();
+        this.selectToday();
       },
-      {
-        start: addDays(startOfDay(new Date()), 1),
-        title: 'Cita con Ana López',
-        color: { primary: '#20c997', secondary: '#d1f2eb' },
-        meta: {
-          cliente: 'Ana López',
-          servicio: 'Tinte',
-          tiempo: '60 minutos'
-        }
-      },
-      {
-        start: addDays(startOfDay(new Date()), 3),
-        title: 'Cita con María Gómez',
-        color: { primary: '#fd7e14', secondary: '#ffe8d9' },
-        meta: {
-          cliente: 'María Gómez',
-          servicio: 'Coloración',
-          tiempo: '60 minutos'
-        }
-      },
-      {
-        start: addDays(startOfDay(new Date()), 5),
-        title: 'Cita con Carlos Ruiz',
-        color: { primary: '#0dcaf0', secondary: '#d1f5ff' },
-        meta: {
-          cliente: 'Carlos Ruiz',
-          servicio: 'Barba',
-          tiempo: '20 minutos'
-        }
+      (error) => {
+        console.error('Error al cargar las citas:', error);
       }
-    ];
+    );
+  }
+
+  // Calcular la duración de la cita
+  calculateDuration(start: Date, end: Date): string {
+    const diffInMinutes = Math.floor((end.getTime() - start.getTime()) / 60000);
+    const hours = Math.floor(diffInMinutes / 60);
+    const minutes = diffInMinutes % 60;
+    return `${hours}h ${minutes}m`;
   }
 
   generateCalendar(): void {

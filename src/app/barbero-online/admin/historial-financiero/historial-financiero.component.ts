@@ -1,15 +1,25 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient, HttpParams } from '@angular/common/http';
+
+interface Historial {
+  id: number;
+  cita_id: number;
+  monto: string;
+  metodo_pago: string;
+  estado_pago: string;
+  notas: string;
+  fecha_creacion: string;
+}
 
 interface Cita {
-  hora: string;
-  fecha: string;
-  cliente: string;
-  barbero: string;
-  tiempo: string;
+  cita_id: number;
   monto: number;
-  sucursal: string;
+  metodo_pago: string;
+  estado_pago: string;
+  notas: string;
+  fecha_creacion: string;
 }
 
 @Component({
@@ -20,57 +30,86 @@ interface Cita {
   styleUrls: ['./historial-financiero.component.css']
 })
 export class HistorialFinancieroComponent implements OnInit {
-  citas: Cita[] = [];
+  historiales: Historial[] = [];
   filteredCitas: Cita[] = [];
   searchQuery: string = '';
   filterDate: string = '';
-  filterTime: string = '';
+  filterCitaId: number | null = null;
+  filterMetodoPago: string = '';
+  filterEstadoPago: string = '';
   itemsPerPage: number = 10;
   currentPage: number = 1;
   totalPages: number = 1;
 
+  metodosPago: string[] = ['Efectivo', 'Sinpe', 'Tarjeta'];
+  estadosPago: string[] = ['Pendiente', 'Completado', 'Cancelado'];
+
+  constructor(private http: HttpClient) {}
+
   ngOnInit(): void {
-    // Cargar citas de ejemplo (simulando datos)
-    this.citas = this.generateSampleData();
+    this.loadHistoriales();
+  }
+
+  loadHistoriales(): void {
     this.applyFilters();
   }
 
-  generateSampleData(): Cita[] {
-    return Array.from({ length: 120 }, (_, i) => ({
-      hora: '08:00',
-      fecha: '2025-04-02',
-      cliente: `Cliente ${i + 1}`,
-      barbero: `Barbero ${i + 1}`,
-      tiempo: '30 min',
-      monto: 150 + i,
-      sucursal: `Sucursal ${i % 3 + 1}`
-    }));
-  }
-
   applyFilters(): void {
-    let filtered = this.citas;
+    let params = new HttpParams()
+      .set('page', this.currentPage.toString())
+      .set('itemsPerPage', this.itemsPerPage.toString());
+
     if (this.searchQuery) {
-      filtered = filtered.filter(cita =>
-        cita.cliente.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        cita.barbero.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        cita.sucursal.toLowerCase().includes(this.searchQuery.toLowerCase())
-      );
+      params = params.set('notas', this.searchQuery);
     }
     if (this.filterDate) {
-      filtered = filtered.filter(cita => cita.fecha.includes(this.filterDate));
+      params = params.set('fecha_creacion', this.filterDate);
     }
-    if (this.filterTime) {
-      filtered = filtered.filter(cita => cita.hora.includes(this.filterTime));
+    if (this.filterCitaId !== null) {
+      params = params.set('cita_id', this.filterCitaId.toString());
     }
-    this.filteredCitas = filtered;
-    this.totalPages = Math.ceil(this.filteredCitas.length / this.itemsPerPage);
-    this.goToPage(1);
+    if (this.filterMetodoPago) {
+      params = params.set('metodo_pago', this.filterMetodoPago);
+    }
+    if (this.filterEstadoPago) {
+      params = params.set('estado_pago', this.filterEstadoPago);
+    }
+
+    // Eliminar el parámetro 'notas' si searchQuery está vacío
+    if (!this.searchQuery) {
+      params = params.delete('notas');
+    }
+
+    this.http.get<Historial[]>('http://localhost/barberia/backend/api/historial_financiero/read_historial.php', { params })
+      .subscribe(historiales => {
+        this.historiales = historiales;
+        this.mapHistorialesToCitas();
+        // Paginación manual en el frontend
+        this.totalPages = Math.ceil(this.historiales.length / this.itemsPerPage);
+      }, error => {
+        console.error('Error al cargar historiales:', error);
+      });
+  }
+
+  mapHistorialesToCitas(): void {
+    this.filteredCitas = this.historiales.map(historial => ({
+      cita_id: historial.cita_id,
+      monto: parseFloat(historial.monto),
+      metodo_pago: historial.metodo_pago,
+      estado_pago: historial.estado_pago,
+      notas: historial.notas,
+      fecha_creacion: historial.fecha_creacion
+    }));
   }
 
   goToPage(page: number): void {
     this.currentPage = page;
-    const startIndex = (page - 1) * this.itemsPerPage;
-    const endIndex = startIndex + this.itemsPerPage;
-    this.filteredCitas = this.filteredCitas.slice(startIndex, endIndex);
+    this.applyFilters();
+  }
+
+  setItemsPerPage(itemsPerPage: number): void {
+    this.itemsPerPage = itemsPerPage;
+    this.currentPage = 1;
+    this.applyFilters();
   }
 }

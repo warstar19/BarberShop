@@ -1,181 +1,82 @@
-<div
-  class="container bg-dark text-warning p-4 rounded-3"
-  style="max-width: 600px"
->
+<div class="container bg-dark text-warning p-4 rounded-3" style="max-width: 600px">
   <h2 class="text-center mb-4 fw-bold">
     {{ isEditing ? "Editar Perfil" : "Perfil de Administrador" }}
   </h2>
 
+  <div *ngIf="errorMessage" class="alert alert-danger">
+    {{ errorMessage }}
+  </div>
+  <div *ngIf="successMessage" class="alert alert-success">
+    {{ successMessage }}
+  </div>
   <form *ngIf="isEditing" (ngSubmit)="saveChanges($event)">
     <div class="mb-3">
-      <label for="username" class="form-label" style="color: #fdfdfd"
-        >Nombre de Usuario:</label
-      >
-      <input
-        type="text"
-        class="form-control"
-        id="username"
-        [(ngModel)]="username"
-        name="username"
-        required
-      />
+      <label for="username" class="form-label" style="color: #fdfdfd">Nombre de Usuario:</label>
+      <input type="text" class="form-control" id="username" [(ngModel)]="username" name="username" required autocomplete="username" (ngModelChange)="checkFormModified(); validateForm()" />
+      <div *ngIf="usernameError" class="text-danger">{{ usernameError }}</div>
     </div>
     <div class="mb-3">
-      <label for="email" class="form-label" style="color: #fdfdfd"
-        >Correo Electrónico:</label
-      >
-      <input
-        type="email"
-        class="form-control"
-        id="email"
-        [(ngModel)]="email"
-        name="email"
-        required
-      />
+      <label for="email" class="form-label" style="color: #fdfdfd">Correo Electrónico:</label>
+      <input type="email" class="form-control" id="email" [(ngModel)]="email" name="email" required autocomplete="email" (ngModelChange)="checkFormModified(); validateForm()" />
+      <div *ngIf="emailError" class="text-danger">{{ emailError }}</div>
     </div>
     <div class="mb-3">
-      <label for="telefono" class="form-label" style="color: #fdfdfd"
-        >Número de Teléfono:</label
-      >
-      <input
-        type="text"
-        class="form-control"
-        id="telefono"
-        [(ngModel)]="telefono"
-        name="telefono"
-        required
-      />
+      <label for="telefono" class="form-label" style="color: #fdfdfd">Número de Teléfono:</label>
+      <input type="text" class="form-control" id="telefono" [(ngModel)]="telefono" name="telefono" required autocomplete="tel" (ngModelChange)="checkFormModified(); validateForm()" />
+      <div *ngIf="telefonoError" class="text-danger">{{ telefonoError }}</div>
     </div>
     <div class="mb-3">
-      <label for="direccion" class="form-label" style="color: #fdfdfd"
-        >Dirección:</label
-      >
-      <input
-        type="text"
-        class="form-control"
-        id="direccion"
-        [(ngModel)]="direccion"
-        name="direccion"
-        required
-      />
+      <label for="direccion" class="form-label" style="color: #fdfdfd">Dirección:</label>
+      <input type="text" class="form-control" id="direccion" [(ngModel)]="direccion" name="direccion" required autocomplete="address-line1" (ngModelChange)="checkFormModified(); validateForm()" />
+      <div *ngIf="direccionError" class="text-danger">{{ direccionError }}</div>
     </div>
     <div class="mb-3">
-      <label for="fechaNacimiento" class="form-label" style="color: #fdfdfd"
-        >Fecha de Nacimiento:</label
-      >
-      <input
-        type="date"
-        class="form-control"
-        id="fechaNacimiento"
-        [(ngModel)]="fechaNacimiento"
-        name="fechaNacimiento"
-        required
-      />
+      <label for="fechaNacimiento" class="form-label" style="color: #fdfdfd">Fecha de Nacimiento:</label>
+      <input type="date" class="form-control" id="fechaNacimiento" [(ngModel)]="fechaNacimiento" name="fechaNacimiento" required autocomplete="bday" (ngModelChange)="checkFormModified(); validateForm()" />
+      <div *ngIf="fechaNacimientoError" class="text-danger">{{ fechaNacimientoError }}</div>
     </div>
     <div class="mb-3">
-      <label for="genero" class="form-label" style="color: #fdfdfd"
-        >Género:</label
-      >
-      <select
-        class="form-control"
-        id="genero"
-        [(ngModel)]="genero"
-        name="genero"
-        required
-      >
+      <label for="genero" class="form-label" style="color: #fdfdfd">Género:</label>
+      <select class="form-control" id="genero" [(ngModel)]="genero" name="genero" required autocomplete="sex" (ngModelChange)="checkFormModified(); validateForm()">
         <option value="Masculino">Masculino</option>
         <option value="Femenino">Femenino</option>
         <option value="Otro">Otro</option>
       </select>
+      <div *ngIf="generoError" class="text-danger">{{ generoError }}</div>
     </div>
     <div class="mb-3">
-      <label for="password" class="form-label" style="color: #fdfdfd"
-        >Contraseña Actual:</label
-      >
+      <label for="password" class="form-label" style="color: #fdfdfd">Contraseña Actual:</label>
       <div class="input-group">
-        <input
-          [type]="showPassword ? 'text' : 'password'"
-          class="form-control"
-          id="password"
-          [(ngModel)]="password"
-          name="password"
-          placeholder="(requerida si cambia contraseña)"
-        />
-        <button
-          type="button"
-          class="btn btn-outline-secondary"
-          (click)="toggleShowPassword()"
-          title="{{ showPassword ? 'Ocultar' : 'Mostrar' }} contraseña"
-        >
-          <i
-            class="bi"
-            [class.bi-eye-slash]="showPassword"
-            [class.bi-eye]="!showPassword"
-          ></i>
+        <input [type]="showPassword ? 'text' : 'password'" class="form-control" id="password" [(ngModel)]="password" name="password" placeholder="(requerida si cambia contraseña)" autocomplete="current-password" (ngModelChange)="checkFormModified(); validateForm()" />
+        <button type="button" class="btn btn-outline-secondary" (click)="toggleShowPassword()" title="{{ showPassword ? 'Ocultar' : 'Mostrar' }} contraseña">
+          <i class="bi" [class.bi-eye-slash]="showPassword" [class.bi-eye]="!showPassword"></i>
         </button>
       </div>
+      <div *ngIf="passwordError" class="text-danger">{{ passwordError }}</div>
     </div>
-
     <div class="mb-3">
-      <label for="newPassword" class="form-label" style="color: #fdfdfd"
-        >Nueva Contraseña:</label
-      >
+      <label for="newPassword" class="form-label" style="color: #fdfdfd">Nueva Contraseña:</label>
       <div class="input-group">
-        <input
-          [type]="showNewPassword ? 'text' : 'password'"
-          class="form-control"
-          id="newPassword"
-          [(ngModel)]="newPassword"
-          name="newPassword"
-          placeholder="(dejar en blanco si no cambia)"
-        />
-        <button
-          type="button"
-          class="btn btn-outline-secondary"
-          (click)="toggleShowNewPassword()"
-          title="{{ showNewPassword ? 'Ocultar' : 'Mostrar' }} contraseña"
-        >
-          <i
-            class="bi"
-            [class.bi-eye-slash]="showNewPassword"
-            [class.bi-eye]="!showNewPassword"
-          ></i>
+        <input [type]="showNewPassword ? 'text' : 'password'" class="form-control" id="newPassword" [(ngModel)]="newPassword" name="newPassword" placeholder="(dejar en blanco si no cambia)" autocomplete="new-password" (ngModelChange)="checkFormModified(); validateForm()" />
+        <button type="button" class="btn btn-outline-secondary" (click)="toggleShowNewPassword()" title="{{ showNewPassword ? 'Ocultar' : 'Mostrar' }} contraseña">
+          <i class="bi" [class.bi-eye-slash]="showNewPassword" [class.bi-eye]="!showNewPassword"></i>
         </button>
       </div>
+      <div *ngIf="newPasswordError" class="text-danger">{{ newPasswordError }}</div>
     </div>
-
     <div class="mb-3">
-      <label for="confirmPassword" class="form-label" style="color: #fdfdfd"
-        >Confirmar Nueva Contraseña:</label
-      >
+      <label for="confirmPassword" class="form-label" style="color: #fdfdfd">Confirmar Nueva Contraseña:</label>
       <div class="input-group">
-        <input
-          [type]="showConfirmPassword ? 'text' : 'password'"
-          class="form-control"
-          id="confirmPassword"
-          [(ngModel)]="confirmPassword"
-          name="confirmPassword"
-        />
-        <button
-          type="button"
-          class="btn btn-outline-secondary"
-          (click)="toggleShowConfirmPassword()"
-          title="{{ showConfirmPassword ? 'Ocultar' : 'Mostrar' }} contraseña"
-        >
-          <i
-            class="bi"
-            [class.bi-eye-slash]="showConfirmPassword"
-            [class.bi-eye]="!showConfirmPassword"
-          ></i>
+        <input [type]="showConfirmPassword ? 'text' : 'password'" class="form-control" id="confirmPassword" [(ngModel)]="confirmPassword" name="confirmPassword" autocomplete="new-password" (ngModelChange)="checkFormModified(); validateForm()" />
+        <button type="button" class="btn btn-outline-secondary" (click)="toggleShowConfirmPassword()" title="{{ showConfirmPassword ? 'Ocultar' : 'Mostrar' }} contraseña">
+          <i class="bi" [class.bi-eye-slash]="showConfirmPassword" [class.bi-eye]="!showConfirmPassword"></i>
         </button>
       </div>
+      <div *ngIf="confirmPasswordError" class="text-danger">{{ confirmPasswordError }}</div>
     </div>
-
     <div class="d-flex justify-content-between">
-      <button type="button" class="btn btn-secondary" (click)="cancelEdit()">
-        Cancelar
-      </button>
-      <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+      <button type="button" class="btn btn-secondary" (click)="cancelEdit()">Cancelar</button>
+      <button type="submit" class="btn btn-primary" [disabled]="!formModified || hasErrors()">Guardar Cambios</button>
     </div>
   </form>
 
@@ -184,13 +85,8 @@
     <div class="mb-3"><strong>Correo Electrónico:</strong> {{ email }}</div>
     <div class="mb-3"><strong>Teléfono:</strong> {{ telefono }}</div>
     <div class="mb-3"><strong>Dirección:</strong> {{ direccion }}</div>
-    <div class="mb-3">
-      <strong>Fecha de Nacimiento:</strong>
-      {{ fechaNacimiento | date : "dd/MM/yyyy" }}
-    </div>
+    <div class="mb-3"><strong>Fecha de Nacimiento:</strong> {{ fechaNacimiento | date : "dd/MM/yyyy" }}</div>
     <div class="mb-3"><strong>Género:</strong> {{ genero }}</div>
-    <button class="btn btn-primary" (click)="toggleEditMode()">
-      Editar Perfil
-    </button>
+    <button class="btn btn-primary" (click)="toggleEditMode()">Editar Perfil</button>
   </div>
 </div>
