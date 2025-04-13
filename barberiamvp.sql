@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 06-04-2025 a las 01:41:40
+-- Tiempo de generación: 13-04-2025 a las 05:41:19
 -- Versión del servidor: 10.4.32-MariaDB
--- Versión de PHP: 8.2.12
+-- Versión de PHP: 8.3.9
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -48,9 +48,31 @@ CREATE TABLE `citas` (
 --
 
 INSERT INTO `citas` (`id`, `cliente_id`, `barbero_id`, `servicio_id`, `sucursal_id`, `fecha_inicio`, `fecha_fin`, `estado`, `notas`, `color_primario`, `color_secundario`, `fecha_creacion`, `fecha_actualizacion`) VALUES
-(1, 4, 2, 1, 1, '2025-04-10 10:00:00', '2025-04-10 10:45:00', 'confirmada', 'Cliente frecuente, corte usual.', '#3498DB', '#FFFFFF', '2025-04-05 18:28:27', '2025-04-05 18:28:27'),
+(1, 4, 2, 1, 1, '2025-04-10 10:00:00', '2025-04-10 14:52:00', 'pendiente', 'Cliente frecuente, corte usual.', NULL, NULL, '2025-04-05 18:28:27', '2025-04-12 08:40:07'),
 (2, 5, 3, 3, 1, '2025-04-01 14:00:00', '2025-04-01 15:15:00', 'completada', 'Primera visita.', NULL, NULL, '2025-04-05 18:28:27', '2025-04-05 18:28:27'),
-(3, 4, 2, 1, 2, '2025-04-15 16:00:00', '2025-04-15 16:45:00', 'pendiente', NULL, NULL, NULL, '2025-04-05 18:28:27', '2025-04-05 18:28:27');
+(3, 4, 2, 1, 2, '2025-04-15 16:00:00', '2025-04-15 16:45:00', 'completada', NULL, NULL, NULL, '2025-04-05 18:28:27', '2025-04-12 08:39:53'),
+(4, 4, 2, 3, 1, '2025-04-12 07:34:00', '2025-05-31 16:45:00', 'cancelada', 'asd', NULL, NULL, '2025-04-12 07:35:14', '2025-04-12 08:39:48'),
+(5, 4, 2, 1, 1, '2025-04-13 02:07:00', '2025-04-26 08:17:00', 'cancelada', 'asd', NULL, NULL, '2025-04-12 08:07:38', '2025-04-12 08:39:45'),
+(6, 5, 2, 1, 2, '2025-04-18 02:47:00', '2025-04-26 02:47:00', 'completada', 'asdaa', NULL, NULL, '2025-04-12 08:48:01', '2025-04-12 08:48:04'),
+(7, 4, 2, 1, 1, '2025-05-08 02:48:00', '2025-05-11 02:48:00', 'cancelada', 'asdasa', NULL, NULL, '2025-04-12 08:48:43', '2025-04-12 08:49:11'),
+(8, 5, 3, 1, 1, '2025-04-20 06:59:00', '2025-04-27 10:05:00', 'cancelada', 'asdaaa', NULL, NULL, '2025-04-12 08:56:02', '2025-04-13 00:53:19');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `historial`
+--
+
+CREATE TABLE `historial` (
+  `id` int(11) NOT NULL,
+  `usuario_id` int(11) NOT NULL,
+  `accion` varchar(50) NOT NULL,
+  `tabla_afectada` varchar(50) NOT NULL,
+  `fecha` datetime DEFAULT current_timestamp(),
+  `descripcion` text DEFAULT NULL,
+  `datos_anteriores` text DEFAULT NULL,
+  `datos_nuevos` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -78,6 +100,27 @@ INSERT INTO `historial_financiero` (`id`, `cita_id`, `monto`, `metodo_pago`, `es
 -- --------------------------------------------------------
 
 --
+-- Estructura Stand-in para la vista `notificacion`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `notificacion` (
+`id` int(11)
+,`fecha_hora` datetime
+,`servicio_id` int(11)
+,`servicio` varchar(100)
+,`tiempoEstimado` int(11)
+,`barbero_id` int(11)
+,`barbero` varchar(100)
+,`cliente_id` int(11)
+,`cliente` varchar(100)
+,`telefono` varchar(20)
+,`tiempoRestante` bigint(21)
+,`mensajeCita` varchar(45)
+);
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `notificaciones`
 --
 
@@ -97,7 +140,7 @@ CREATE TABLE `notificaciones` (
 --
 
 INSERT INTO `notificaciones` (`id`, `usuario_id`, `titulo`, `mensaje`, `tipo`, `leida`, `fecha_envio`, `fecha_lectura`) VALUES
-(1, 4, 'Confirmación de Cita', 'Tu cita para Corte Clásico el 10 de Abril a las 10:00 AM con Juan Perez ha sido confirmada.', 'cita', 0, '2025-04-05 18:28:27', NULL),
+(1, 4, 'Confirmación de Cita', 'Tu cita para Corte Clásico el 10 de Abril a las 10:00 AM con Juan Perez ha sido confirmada.', 'cita', 1, '2025-04-05 18:28:27', '2025-04-07 09:26:00'),
 (2, 1, 'Actualización de Sistema', 'El mantenimiento programado se completó exitosamente.', 'sistema', 1, '2025-04-05 18:28:27', NULL),
 (3, 5, '¡Promoción Especial!', 'Obtén un 15% de descuento en tu próximo afeitado de barba. ¡Agenda ya!', 'promocion', 0, '2025-04-05 18:28:27', NULL);
 
@@ -129,6 +172,22 @@ INSERT INTO `registros_cambios` (`id`, `tabla_afectada`, `registro_id`, `tipo_ca
 -- --------------------------------------------------------
 
 --
+-- Estructura Stand-in para la vista `registros_cambios_usuarios`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `registros_cambios_usuarios` (
+`id` int(11)
+,`usuario_id` int(11)
+,`nombre_usuario` varchar(100)
+,`accion` varchar(50)
+,`tabla_afectada` varchar(50)
+,`fecha` datetime
+,`descripcion` text
+);
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `servicios`
 --
 
@@ -148,9 +207,9 @@ CREATE TABLE `servicios` (
 --
 
 INSERT INTO `servicios` (`id`, `nombre`, `descripcion`, `precio`, `duracion_minutos`, `imagen_url`, `activo`, `fecha_creacion`) VALUES
-(1, 'Corte de Cabello Clásico', 'Corte tradicional para caballero, incluye lavado y peinado básico.', 10000.00, 45, 'url/imagen/corte_clasico.jpg', 1, '2025-04-05 18:28:27'),
-(2, 'Afeitado de Barba Completo', 'Afeitado con navaja, toallas calientes y masaje facial.', 8000.00, 30, 'url/imagen/afeitado.jpg', 1, '2025-04-05 18:28:27'),
-(3, 'Corte y Barba Premium', 'Servicio combinado de corte de cabello y arreglo/afeitado de barba.', 15000.00, 75, 'url/imagen/corte_barba.jpg', 1, '2025-04-05 18:28:27');
+(1, 'Corte de Cabello Clásico', 'Corte tradicional para caballero, incluye lavado y peinado básico.', 10000.00, 45, 'corte-caballero.jpg', 1, '2025-04-05 18:28:27'),
+(2, 'Afeitado de Barba Completo', 'Afeitado con navaja, toallas calientes y masaje facial.', 8000.00, 30, 'trat-facial.jpg', 1, '2025-04-05 18:28:27'),
+(3, 'Corte y Barba Premium', 'Servicio combinado de corte de cabello y arreglo/afeitado de barba.', 15000.00, 75, 'corte-barba.jpg', 1, '2025-04-05 18:28:27');
 
 -- --------------------------------------------------------
 
@@ -231,11 +290,55 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id`, `username`, `email`, `telefono`, `direccion`, `fecha_nacimiento`, `genero`, `password_hash`, `rol`, `estado`, `token`, `barberold`, `fecha_creacion`, `fecha_actualizacion`) VALUES
-(1, 'Barberia_admin', 'admin@barberia.com', '+506 888800022', 'Oficina Central', '1985-01-16', 'Masculino', '$2y$10$TsGhF0vE5IKDl/7fvdXayucMV.5BaaW1.yvX9JH8POIn2Hn2v0V1.', 'admin', 'activo', NULL, NULL, '2025-04-05 18:28:27', '2025-04-05 23:31:15'),
-(2, 'barbero_juan', 'juan.perez@barberia.com', '+506 88880002', 'Heredia Centro', '1990-05-20', 'Masculino', '$2y$10$Ix707qwTPOXA4RaRGE49suSH19hved4IO6kIfp5xaOpIQ3zFfHxRG', 'barbero', 'activo', NULL, NULL, '2025-04-05 18:28:27', '2025-04-05 23:12:27'),
-(3, 'barbero_ana', 'ana.gomez@barberia.com', '+506 88880003', 'San José, Sabana', '1995-08-10', 'Femenino', '$2y$10$.HZaPPiHeVRyMKpmIN3wxulsXPlDmXvlLFhgVZNCgMUVaGRsKMLGm', 'barbero', 'activo', NULL, NULL, '2025-04-05 18:28:27', '2025-04-05 23:13:10'),
-(4, 'cliente_carlos', 'carlos.m@email.com', '+506 87770001', 'Cartago, Paraíso', '1988-11-01', 'Masculino', '$2y$10$QNS2VwJAK9S.vfk0.NsZQ.wjvFX0rHE/zZ/lwYaN5k8FfxWpTZhLC', 'cliente', 'activo', NULL, NULL, '2025-04-05 18:28:27', '2025-04-05 23:13:52'),
+(1, 'Barberia_admin', 'admin@barberia.com', '+506 88880003', 'Oficina Central', '1985-01-16', 'Masculino', '$2y$10$BTRyPEkhyVXi1yBrhvhupOlU42SFZSRFG6jSqUXB/E7EfPGigtiyC', 'admin', 'activo', 'admin', NULL, '2025-04-05 18:28:27', '2025-04-13 00:49:16'),
+(2, 'barbero_juan', 'juan.perez@barberia.com', '+506 88880002', 'Heredia Centro', '1990-05-20', 'Masculino', '$2y$10$Ix707qwTPOXA4RaRGE49suSH19hved4IO6kIfp5xaOpIQ3zFfHxRG', 'barbero', 'activo', 'barbero', NULL, '2025-04-05 18:28:27', '2025-04-13 00:50:42'),
+(3, 'barbero_ana', 'ana.gomez@barberia.com', '+506 88880003', 'San José, Sabana', '1995-08-12', 'Femenino', '$2y$10$Y.ARJCIT235Td58o94U2SOws.Wf8Z9cwmuSsuMSVQr1rBs1TM4mri', 'barbero', 'activo', 'barbero', NULL, '2025-04-05 18:28:27', '2025-04-10 18:00:29'),
+(4, 'cliente_carlos', 'carlos.m@email.com', '+506 87770001', 'Cartago, Paraíso', '1988-11-01', 'Masculino', '$2y$10$QNS2VwJAK9S.vfk0.NsZQ.wjvFX0rHE/zZ/lwYaN5k8FfxWpTZhLC', 'cliente', 'activo', 'cliente', NULL, '2025-04-05 18:28:27', '2025-04-08 01:14:00'),
 (5, 'cliente_sofia', 'sofia.r@email.com', '+506 86660001', 'Alajuela, Grecia', '2000-03-25', 'Femenino', '$2y$10$qDI9HwqQt7ghQ073Fc6VNeveJwkUDuF7W3Qk4/a4bzPHD1WaHLhK6', 'cliente', 'activo', NULL, NULL, '2025-04-05 18:28:27', '2025-04-05 23:14:29');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura Stand-in para la vista `vista_citas_completadas_canceladas`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `vista_citas_completadas_canceladas` (
+`hora` datetime
+,`fecha` date
+,`cliente` varchar(100)
+,`barbero` varchar(100)
+,`tiempo` bigint(21)
+,`monto` decimal(10,2)
+,`sucursal` varchar(100)
+,`servicio` varchar(100)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `notificacion`
+--
+DROP TABLE IF EXISTS `notificacion`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `notificacion`  AS SELECT `c`.`id` AS `id`, `c`.`fecha_inicio` AS `fecha_hora`, `c`.`servicio_id` AS `servicio_id`, `s`.`nombre` AS `servicio`, `s`.`duracion_minutos` AS `tiempoEstimado`, `c`.`barbero_id` AS `barbero_id`, `b`.`username` AS `barbero`, `c`.`cliente_id` AS `cliente_id`, `cl`.`username` AS `cliente`, `cl`.`telefono` AS `telefono`, timestampdiff(MINUTE,current_timestamp(),`c`.`fecha_inicio`) AS `tiempoRestante`, concat('Cita próxima en ',timestampdiff(MINUTE,current_timestamp(),`c`.`fecha_inicio`),' minutos') AS `mensajeCita` FROM (((`citas` `c` join `usuarios` `b` on(`c`.`barbero_id` = `b`.`id`)) join `usuarios` `cl` on(`c`.`cliente_id` = `cl`.`id`)) join `servicios` `s` on(`c`.`servicio_id` = `s`.`id`)) WHERE `c`.`fecha_inicio` >= current_timestamp() ORDER BY `c`.`fecha_inicio` ASC ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `registros_cambios_usuarios`
+--
+DROP TABLE IF EXISTS `registros_cambios_usuarios`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `registros_cambios_usuarios`  AS SELECT `h`.`id` AS `id`, `h`.`usuario_id` AS `usuario_id`, `u`.`username` AS `nombre_usuario`, `h`.`accion` AS `accion`, `h`.`tabla_afectada` AS `tabla_afectada`, `h`.`fecha` AS `fecha`, `h`.`descripcion` AS `descripcion` FROM (`historial` `h` join `usuarios` `u` on(`h`.`usuario_id` = `u`.`id`)) WHERE `h`.`tabla_afectada` = 'usuarios' ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `vista_citas_completadas_canceladas`
+--
+DROP TABLE IF EXISTS `vista_citas_completadas_canceladas`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vista_citas_completadas_canceladas`  AS SELECT `c`.`fecha_inicio` AS `hora`, cast(`c`.`fecha_inicio` as date) AS `fecha`, `u_cliente`.`username` AS `cliente`, `u_barbero`.`username` AS `barbero`, timestampdiff(MINUTE,`c`.`fecha_inicio`,`c`.`fecha_fin`) AS `tiempo`, `se`.`precio` AS `monto`, `su`.`nombre` AS `sucursal`, `se`.`nombre` AS `servicio` FROM (((((`citas` `c` join `usuarios` `u_cliente` on(`c`.`cliente_id` = `u_cliente`.`id` and `u_cliente`.`rol` = 'cliente')) join `usuarios` `u_barbero` on(`c`.`barbero_id` = `u_barbero`.`id` and `u_barbero`.`rol` = 'barbero')) join `servicios_sucursal` `ss` on(`c`.`servicio_id` = `ss`.`servicio_id` and `c`.`sucursal_id` = `ss`.`sucursal_id`)) join `sucursales` `su` on(`c`.`sucursal_id` = `su`.`id`)) join `servicios` `se` on(`ss`.`servicio_id` = `se`.`id`)) WHERE `c`.`estado` in ('completada','cancelada') ;
 
 --
 -- Índices para tablas volcadas
@@ -252,6 +355,12 @@ ALTER TABLE `citas`
   ADD KEY `idx_citas_estado` (`estado`),
   ADD KEY `idx_citas_cliente` (`cliente_id`),
   ADD KEY `idx_citas_barbero` (`barbero_id`);
+
+--
+-- Indices de la tabla `historial`
+--
+ALTER TABLE `historial`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indices de la tabla `historial_financiero`
@@ -309,13 +418,19 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de la tabla `citas`
 --
 ALTER TABLE `citas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT de la tabla `historial`
+--
+ALTER TABLE `historial`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `historial_financiero`
 --
 ALTER TABLE `historial_financiero`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `notificaciones`
