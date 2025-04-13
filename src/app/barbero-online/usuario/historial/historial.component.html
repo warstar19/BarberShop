@@ -14,11 +14,11 @@
   <!-- Contenido del historial -->
   <div *ngIf="!isLoading" class="row fadeInText">
     <div *ngFor="let item of historial" class="col-12 mb-3">
-      <div class="card bg-dark text-light p-3">
+      <div class="card bg-dark text-light p-3" style="background-color: rgba(50, 65, 91, 0.139) !important;">
         <!-- Vista previa de la cita -->
         <p><strong>Barbero:</strong> {{ item.barbero }}</p>
-        <p><strong>Fecha:</strong> {{ item.fecha }}</p>
-        <p><strong>Hora:</strong> {{ item.hora }}</p>
+        <p><strong>Fecha:</strong> {{ item.fecha | date: 'shortDate' }}</p>
+        <p><strong>Hora:</strong> {{ item.hora | date: 'shortTime' }}</p>
         <p><strong>Estado:</strong>
           <span [ngClass]="{'text-success': item.estado === 'completada', 'text-danger': item.estado === 'cancelada'}">
             {{ item.estado === 'completada' ? 'Completada' : 'Cancelada' }}
@@ -33,9 +33,10 @@
         <!-- Información adicional (se muestra si isExpanded es true) -->
         <div *ngIf="item.isExpanded" class="mt-3">
           <p><strong>Servicio:</strong> {{ item.servicio }}</p>
-          <p><strong>Tiempo Estimado:</strong> {{ item.tiempo }}</p>
+          <p><strong>Tiempo Estimado:</strong> {{ item.tiempo | number: '1.0-0' }} min</p>
           <p><strong>Cliente:</strong> {{ item.cliente }}</p>
-          <p><strong>Teléfono:</strong> {{ item.telefono }}</p>
+          <p><strong>Sucursal:</strong> {{ item.sucursal }}</p>
+          <p><strong>Monto:</strong> {{ item.monto | currency: '₡' }}</p>
         </div>
       </div>
     </div>

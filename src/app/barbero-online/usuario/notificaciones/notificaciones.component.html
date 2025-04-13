@@ -8,34 +8,32 @@
     <div class="skeleton-loader"></div>
   </div>
 
+  <!-- Mostrar tiempo restante de la cita más cercana -->
+  <div *ngIf="citaMasCercana" class="alert alert-success mt-3 shadow-sm rounded">
+    <h5><strong>Cita más cercana</strong></h5>
+    <p><strong>Cliente:</strong> {{ citaMasCercana.cliente }}</p>
+    <p><strong>Servicio:</strong> {{ citaMasCercana.servicio }}</p>
+    <p><strong>Tiempo Restante:</strong> {{ citaMasCercana.mensajeCita }}</p>
+  </div>
+
   <!-- Mostrar citas después de cargar -->
   <div *ngIf="!cargando">
-    <!-- Mostrar notificaciones -->
-    <div *ngFor="let notificacion of notificaciones" class="alert alert-info text-center" role="alert"  style="background-color:  #ffc10777 !important; font-weight: bold;">
-      {{ notificacion }}
-    </div>
+    <!-- Notificaciones individuales -->
+    <div *ngFor="let notificacion of notificaciones" class="alert alert-info text-center shadow-sm rounded mb-3" role="alert"
+         (click)="toggleDetalle(notificacion)" style="background-color: #ffc10777; font-weight: bold; cursor: pointer;">
+      <strong>{{ notificacion.cliente }}</strong> - {{ notificacion.servicio }}
+      <div class="mt-2">{{ notificacion.mensajeCita }}</div>
 
-    <!-- Mostrar citas -->
-    <div *ngFor="let cita of citas">
-      <!-- Cita individual -->
-      <div class="alert alert-info text-center" role="alert" (click)="toggleDetalle(cita)"  style="border-color: #4d4e50;">
-        {{ cita.mensajeCita }}
-        <span *ngIf="cita === citaSeleccionada" class="d-block text-muted">Ocultar detalles</span>
-        <div class="text-center mt-3">
-          <p class="h5">Tiempo restante:</p>
-          <p class="display-6">{{ cita.tiempoRestante }}</p>
-        </div>
+      <!-- Mostrar los detalles justo debajo de cada notificación -->
+      <div *ngIf="citaSeleccionada === notificacion" class="alert alert-secondary mt-3 shadow-sm rounded fadeIn">
+        <h5><strong>Detalles de la Cita</strong></h5>
+        <p><strong>Cliente:</strong> {{ notificacion.cliente }}</p>
+        <p><strong>Barbero:</strong> {{ notificacion.barbero }}</p>
+        <p><strong>Servicio:</strong> {{ notificacion.servicio }}</p>
+        <p><strong>Teléfono:</strong> {{ notificacion.telefono }}</p>
+        <p><strong>Tiempo Restante:</strong> {{ notificacion.mensajeCita }}</p>
+        <p><strong>Fecha de Cita:</strong> {{ notificacion.fecha_hora | date:'fullDate' }}</p>
       </div>
-
-      <div *ngIf="cita === citaSeleccionada" class="detalle-cita p-3 bg-secondary rounded text-center">
-        <p><strong>Barbero:</strong> {{ cita.barbero }}</p>
-        <p><strong>Servicio:</strong> {{ cita.servicio }}</p>
-        <p><strong>Tiempo estimado:</strong> {{ cita.tiempoEstimado }}</p>
-        <p><strong>Cliente:</strong> {{ cita.cliente }}</p>
-        <p><strong>Teléfono:</strong> {{ cita.telefono }}</p>
-      </div>
-
-
     </div>
   </div>
 </div>

@@ -1,15 +1,17 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 
-interface Cita {
-  barbero: string;
-  fecha: Date;
+interface Notificacion {
+  id: number;
+  fecha_hora: string;
   servicio: string;
-  tiempoEstimado: string;
+  tiempoEstimado: number;
+  barbero: string;
   cliente: string;
   telefono: string;
-  tiempoRestante?: string;
-  mensajeCita?: string;
+  tiempoRestante: number;
+  mensajeCita: string;
 }
 
 @Component({
@@ -20,57 +22,24 @@ interface Cita {
   styleUrls: ['./notificaciones.component.css']
 })
 export class NotificacionesComponent implements OnInit, OnDestroy {
-  citas: Cita[] = [];
-  citaSeleccionada: Cita | null = null;
-  cargando: boolean = true;  // Variable para mostrar el skeleton loader
+  notificaciones: Notificacion[] = [];
+  citaSeleccionada: Notificacion | null = null;
+  cargando: boolean = true;
+  citaMasCercana: Notificacion | null = null; // Guardamos la cita más cercana
   intervalId: any;
-  notificacionesEnviadas: Set<string> = new Set();
-  notificaciones: string[] = []; // Aquí se almacenan las notificaciones
+
+  constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
-    // Simulación de carga de citas
-    setTimeout(() => {
-      this.citas = [
-        {
-          barbero: 'Juan Pérez',
-          fecha: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000), // 1 semana
-          servicio: 'Corte de cabello',
-          tiempoEstimado: '45 minutos',
-          cliente: 'Carlos López',
-          telefono: '123-456-7890'
-        },
-        {
-          barbero: 'Ana Rodríguez',
-          fecha: new Date(new Date().getTime() + 3 * 24 * 60 * 60 * 1000), // 3 días
-          servicio: 'Afeitado',
-          tiempoEstimado: '30 minutos',
-          cliente: 'Luis García',
-          telefono: '987-654-3210'
-        },
-        {
-          barbero: 'Pedro Gómez',
-          fecha: new Date(new Date().getTime() + 2 * 24 * 60 * 60 * 1000), // 2 días
-          servicio: 'Corte y barba',
-          tiempoEstimado: '60 minutos',
-          cliente: 'José Martín',
-          telefono: '555-123-4567'
-        }
-      ];
+    this.cargarNotificaciones();
 
-      // Ordenar citas de la más cercana a la más lejana (por fecha)
-      this.citas.sort((a, b) => a.fecha.getTime() - b.fecha.getTime());
-
-      this.cargando = false; // Datos cargados, ocultar skeleton loader
-      this.citas.forEach(cita => {
-        this.calcularTiempoRestante(cita);
-      });
-    }, 2000);  // Simulamos que los datos tardan 2 segundos en cargar
-
+    // Refrescar notificaciones cada 60 segundos
     this.intervalId = setInterval(() => {
-      this.citas.forEach(cita => {
-        this.calcularTiempoRestante(cita);
-      });
-    }, 1000);
+      this.cargarNotificaciones();
+    }, 60000); // Cada 60 segundos
+
+    // Inicialmente calculamos el tiempo restante
+    this.calcularTiempoRestante();
   }
 
   ngOnDestroy(): void {
@@ -79,85 +48,58 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
     }
   }
 
-  toggleDetalle(cita: Cita): void {
-    if (this.citaSeleccionada === cita) {
-      this.citaSeleccionada = null;
-    } else {
-      this.citaSeleccionada = cita;
-    }
+  // Cargar las notificaciones desde la API
+  cargarNotificaciones(): void {
+    this.http.get<Notificacion[]>('http://localhost/barberia/backend/api/notificaciones/read_notificacion.php')
+      .subscribe(
+        (data) => {
+          this.notificaciones = data;
+          this.cargando = false;
+          this.calcularTiempoRestante(); // Calculamos el tiempo restante de todas las citas
+        },
+        (error) => {
+          console.error('Error al cargar las notificaciones', error);
+          this.cargando = false;
+        }
+      );
   }
 
-  private calcularTiempoRestante(cita: Cita): void {
+  // Calcular el tiempo restante para cada cita
+  calcularTiempoRestante(): void {
     const ahora = new Date().getTime();
-    const citaTiempo = cita.fecha.getTime();
-    const diferencia = citaTiempo - ahora;
 
-    if (diferencia <= 0) {
-      cita.tiempoRestante = 'La cita ya ha pasado';
-      cita.mensajeCita = '';
-      return;
-    }
+    this.notificaciones.forEach((notificacion) => {
+      const citaTiempo = new Date(notificacion.fecha_hora).getTime();
+      const diferencia = citaTiempo - ahora;
 
-    const dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
-    const horas = Math.floor((diferencia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
-    const segundos = Math.floor((diferencia % (1000 * 60)) / 1000);
+      if (diferencia <= 0) {
+        notificacion.mensajeCita = 'La cita ya ha pasado';
+        notificacion.tiempoRestante = 0;
+      } else {
+        const dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
+        const horas = Math.floor((diferencia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
+        const segundos = Math.floor((diferencia % (1000 * 60)) / 1000);
 
-    const horaDesmilitarizada = cita.fecha.toLocaleTimeString('es-ES', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true,
-    });
+        notificacion.tiempoRestante = diferencia;
+        notificacion.mensajeCita = `${dias}d ${horas}h ${minutos}m ${segundos}s restantes`;
 
-    cita.tiempoRestante = `${dias}d ${horas}h ${minutos}m ${segundos}s`;
-
-    const diasRestantes = (citaTiempo - ahora) / (1000 * 60 * 60 * 24);
-    if (diasRestantes === 0) {
-      cita.mensajeCita = `La cita es hoy a las ${horaDesmilitarizada}`;
-    } else if (diasRestantes < 7) {
-      cita.mensajeCita = `La cita es esta semana el ${cita.fecha.toLocaleDateString('es-ES')} a las ${horaDesmilitarizada}`;
-    } else if (diasRestantes < 30) {
-      cita.mensajeCita = `La cita es el próximo mes el ${cita.fecha.toLocaleDateString('es-ES')} a las ${horaDesmilitarizada}`;
-    } else if (diasRestantes < 180) {
-      cita.mensajeCita = `La cita es en los próximos meses el ${cita.fecha.toLocaleDateString('es-ES')} a las ${horaDesmilitarizada}`;
-    } else {
-      cita.mensajeCita = `La cita está muy lejos (más de 6 meses)`;
-    }
-
-    this.generarNotificacion(dias, horas);
-  }
-
-  private generarNotificacion(dias: number, horas: number): void {
-    const notificaciones = [
-      { texto: 'Falta 1 semana para la proxima cita', dias: 7, horas: 0 },
-      { texto: 'Faltan 3 días para la proxima cita', dias: 3, horas: 0 },
-      { texto: 'Falta 1 día para la proxima cita', dias: 1, horas: 0 },
-      { texto: 'Faltan 12 horas para la proxima cita', dias: 0, horas: 12 },
-      { texto: 'Faltan 6 horas para la proxima cita', dias: 0, horas: 6 },
-      { texto: 'Faltan 3 horas para la proxima cita', dias: 0, horas: 3 },
-      { texto: 'Falta 1 hora para la proxima cita', dias: 0, horas: 1 },
-    ];
-
-    // Limpiar las notificaciones anteriores
-    this.notificaciones = [];
-
-    // Filtrar la notificación más cercana
-    let notificacionMasProxima: string | null = null;
-    let diasRestantesMinimos = Infinity;
-
-    notificaciones.forEach(notificacion => {
-      const diferenciaDias = Math.abs(dias - notificacion.dias);
-      const diferenciaHoras = Math.abs(horas - notificacion.horas);
-
-      if (diferenciaDias < diasRestantesMinimos || (diferenciaDias === diasRestantesMinimos && diferenciaHoras < 6)) {
-        notificacionMasProxima = notificacion.texto;
-        diasRestantesMinimos = diferenciaDias;
+        if (dias === 0) {
+          notificacion.mensajeCita = `La cita es hoy a las ${new Date(notificacion.fecha_hora).toLocaleTimeString()}`;
+        }
       }
     });
 
-    // Solo mostramos la notificación más cercana
-    if (notificacionMasProxima) {
-      this.notificaciones.push(notificacionMasProxima);
-    }
+    // Ordenamos las citas de la más cercana a la más lejana
+    this.notificaciones.sort((a, b) => a.tiempoRestante - b.tiempoRestante);
+
+    // Establecemos la cita más cercana
+    this.citaMasCercana = this.notificaciones[0] || null;
+  }
+
+  // Manejar el despliegue de detalles de la cita seleccionada
+  toggleDetalle(cita: Notificacion): void {
+    // Si ya está seleccionada, la desmarcamos; si no, la mostramos
+    this.citaSeleccionada = this.citaSeleccionada === cita ? null : cita;
   }
 }
