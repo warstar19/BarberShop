@@ -5,7 +5,7 @@ include '../conexion.php';
 $data = json_decode(file_get_contents("php://input"));
 
 try {
-    // Validación de datos (similar a create_registro_cambio.php)
+    // Validación de datos (similar a create_mbio.php)
     if (!isset($data->id) || !is_numeric($data->id) || $data->id <= 0) {
         throw new Exception("ID de registro de cambio inválido");
     }

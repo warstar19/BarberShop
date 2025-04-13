@@ -2,25 +2,30 @@
 include '../cors.php';
 include '../conexion.php';
 
-$data = json_decode(file_get_contents("php://input"));
+$id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
 try {
-    // Validación de datos
-    if (!isset($data->id) || !is_numeric($data->id) || $data->id <= 0) {
+    if ($id <= 0) {
         throw new Exception("ID de usuario inválido");
     }
 
-    $sql = "UPDATE usuarios SET estado = 'inactivo' WHERE id = :id"; // Cambiar estado a "inactivo"
-    $stmt = $conn->prepare($sql);
-    $stmt->bindParam(':id', $data->id);
+    $stmt = $conn->prepare("SELECT estado FROM usuarios WHERE id = :id");
+    $stmt->bindParam(':id', $id);
+    $stmt->execute();
+    $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if ($stmt->execute()) {
-        echo json_encode(["mensaje" => "Usuario desactivado con éxito"]);
-    } else {
-        echo json_encode(["error" => "Error al desactivar usuario"]);
+    if (!$usuario) {
+        throw new Exception("Usuario no encontrado");
     }
-} catch (PDOException $e) {
-    echo json_encode(["error" => $e->getMessage()]);
+
+    $nuevoEstado = ($usuario['estado'] === 'activo') ? 'inactivo' : 'activo';
+
+    $update = $conn->prepare("UPDATE usuarios SET estado = :estado WHERE id = :id");
+    $update->bindParam(':estado', $nuevoEstado);
+    $update->bindParam(':id', $id);
+    $update->execute();
+
+    echo json_encode(["mensaje" => "Usuario actualizado a estado '$nuevoEstado' con éxito"]);
 } catch (Exception $e) {
     echo json_encode(["error" => $e->getMessage()]);
 }
