@@ -1,89 +1,121 @@
 <div class="container mt-5 justify-content-center align-items-center vh-100">
+  <!-- Título -->
   <h1 class="text-center mb-4" style="color: #ffc107;">Reserva de Cita</h1>
+
   <div class="d-flex flex-wrap justify-content-center gap-3">
-    <!-- Formulario de reserva -->
-    <div *ngIf="!formSubmitted" class="card shadow-lg border-0 rounded-4 fade-in" style="flex: 1 1 300px; max-width: 600px; background-color: #212529;">
-      <div class="card-body p-4">
-        <h2 class="text-center mb-4" style="color: #ffc107;">Formulario de Reserva</h2>
 
-        <!-- Skeleton Loader (si está cargando) -->
-        <div *ngIf="loading" class="skeleton-loader"></div>
+    <!-- Contenedor para el formulario y el mapa -->
+    <div class="row w-100">
+      <!-- Formulario de Reserva -->
+      <div class="col-md-8">
+        <div *ngIf="!formSubmitted" class="card shadow-lg border-0 rounded-4 fade-in" style="background-color: #212529;">
+          <div class="card-body p-4">
+            <h2 class="text-center mb-4" style="color: #ffc107;">Formulario de Reserva</h2>
 
-        <form *ngIf="!loading" (ngSubmit)="onSubmit()" #reservForm="ngForm" class="form">
-          <!-- Campo para seleccionar la tienda -->
-          <div class="mb-3">
-            <label for="tienda" class="form-label" style="color: #fdfdfd;">Selecciona una Tienda:</label>
-            <select class="form-control rounded-3" id="tienda" name="tienda" ngModel (change)="cambiarTienda($event)" required style="background-color: #343a40; color: #fdfdfd; border: 1px solid #fdfdfd;">
-              <option value="">Selecciona una tienda</option>
-              <option *ngFor="let tienda of tiendas" [value]="tienda.nombre">{{ tienda.nombre }}</option>
-            </select>
-            <div *ngIf="reservForm.controls['tienda']?.invalid && reservForm.controls['tienda']?.touched" class="text-danger">
-              Seleccionar una tienda es obligatorio.
-            </div>
+            <!-- Cargando -->
+            <div *ngIf="loading" class="skeleton-loader"></div>
+
+            <!-- Formulario -->
+            <form *ngIf="!loading" (ngSubmit)="onSubmit()" #reservform="ngForm" class="form">
+              <!-- Cliente
+              <div class="mb-3">
+                <label for="cliente_id" class="form-label">Cliente</label>
+                <select class="form-select bg-dark text-warning" id="cliente_id" name="cliente_id" [(ngModel)]="nuevaCita.cliente_id" required>
+                  <option [ngValue]="0" disabled>Seleccionar Cliente</option>
+                  <option *ngFor="let cliente of clientes" [ngValue]="cliente.id">{{ cliente.username }}</option>
+                </select>
+              </div>-->
+
+              <!-- Barbero -->
+              <div class="mb-3">
+                <label for="barbero_id" class="form-label">Barbero</label>
+                <select class="form-select bg-dark text-warning" id="barbero_id" name="barbero_id" [(ngModel)]="nuevaCita.barbero_id" required>
+                  <option [ngValue]="0" disabled>Seleccionar Barbero</option>
+                  <option *ngFor="let barbero of barberos" [ngValue]="barbero.id">{{ barbero.username }}</option>
+                </select>
+              </div>
+
+              <!-- Sucursal -->
+              <div class="mb-3">
+                <label for="sucursal_id" class="form-label">Sucursal</label>
+                <select class="form-select bg-dark text-warning" id="sucursal_id" name="sucursal_id" [(ngModel)]="nuevaCita.sucursal_id" (change)="cargarServiciosPorSucursal(nuevaCita.sucursal_id)" required>
+                  <option [ngValue]="0" disabled>Seleccionar Sucursal</option>
+                  <option *ngFor="let sucursal of sucursales" [ngValue]="sucursal.id">{{ sucursal.nombre }}</option>
+                </select>
+              </div>
+
+              <!-- Servicio -->
+              <div class="mb-3">
+                <label for="servicio_id" class="form-label">Servicio</label>
+                <select class="form-select bg-dark text-warning" id="servicio_id" name="servicio_id" [(ngModel)]="nuevaCita.servicio_id" required>
+                  <option [ngValue]="0" disabled>Seleccionar Servicio</option>
+                  <option *ngFor="let servicio of servicios" [ngValue]="servicio.id">{{ servicio.nombre }}</option>
+                </select>
+              </div>
+
+              <!-- Fecha y Hora de Inicio -->
+              <div class="mb-3">
+                <label for="fecha_inicio" class="form-label">Fecha y Hora de Inicio</label>
+                <input type="datetime-local" class="form-control bg-dark text-warning" id="fecha_inicio" name="fecha_inicio" [(ngModel)]="nuevaCita.fecha_inicio" required>
+              </div>
+
+              <!-- Fecha y Hora de Fin -->
+              <div class="mb-3">
+                <label for="fecha_fin" class="form-label">Fecha y Hora de Fin</label>
+                <input type="datetime-local" class="form-control bg-dark text-warning" id="fecha_fin" name="fecha_fin" [(ngModel)]="nuevaCita.fecha_fin" required>
+              </div>
+
+              <!-- Notas -->
+              <div class="mb-3">
+                <label for="notas" class="form-label">Notas</label>
+                <textarea class="form-control bg-dark text-warning" id="notas" name="notas" [(ngModel)]="nuevaCita.notas" placeholder="Agregar nota"></textarea>
+              </div>
+
+              <!-- Botón Enviar -->
+              <div class="text-end">
+                <button type="submit" class="btn btn-primary w-100 rounded-3" style="background-color: #ffc107; border-color: #ffc107;" [disabled]="reservform.invalid">
+                  Agendar Cita
+                </button>
+              </div>
+            </form>
           </div>
-
-          <!-- Campo para seleccionar fecha -->
-          <div class="mb-3">
-            <label for="fecha" class="form-label" style="color: #fdfdfd;">Fecha:</label>
-            <input type="date" class="form-control rounded-3" id="fecha" name="fecha" ngModel placeholder="Selecciona una fecha" required style="background-color: #343a40; color: #fdfdfd; border: 1px solid #fdfdfd;">
-            <div *ngIf="reservForm.controls['fecha']?.invalid && reservForm.controls['fecha']?.touched" class="text-danger">
-              La fecha es obligatoria.
-            </div>
-          </div>
-
-          <!-- Campo para seleccionar barbero -->
-          <div class="mb-3">
-            <label for="barbero" class="form-label" style="color: #fdfdfd;">Selecciona Barbero:</label>
-            <select class="form-control rounded-3" id="barbero" name="barbero" ngModel required style="background-color: #343a40; color: #fdfdfd; border: 1px solid #fdfdfd;">
-              <option value="">Selecciona un barbero</option>
-              <option value="Barbero 1">Barbero 1</option>
-              <option value="Barbero 2">Barbero 2</option>
-            </select>
-            <div *ngIf="reservForm.controls['barbero']?.invalid && reservForm.controls['barbero']?.touched" class="text-danger">
-              Seleccionar un barbero es obligatorio.
-            </div>
-          </div>
-
-          <!-- Campo para seleccionar servicio -->
-          <div class="mb-3">
-            <label for="servicio" class="form-label" style="color: #fdfdfd;">Tipo de Servicio:</label>
-            <select class="form-control rounded-3" id="servicio" name="servicio" ngModel required style="background-color: #343a40; color: #fdfdfd; border: 1px solid #fdfdfd;">
-              <option value="">Selecciona un servicio</option>
-              <option value="Corte de cabello">Corte de cabello</option>
-              <option value="Afeitado">Afeitado</option>
-            </select>
-            <div *ngIf="reservForm.controls['servicio']?.invalid && reservForm.controls['servicio']?.touched" class="text-danger">
-              Seleccionar un servicio es obligatorio.
-            </div>
-          </div>
-
-          <!-- Botón para enviar formulario -->
-          <button type="submit" class="btn btn-primary w-100 rounded-3" style="background-color: #ffc107; border-color: #ffc107;" [disabled]="reservForm.invalid">
-            Agendar Cita
-          </button>
-        </form>
+        </div>
       </div>
-    </div>
+<!-- Mensaje de éxito -->
+<div *ngIf="formSubmitted" class="col-md-8 alert alert-success w-100">
+  <h3 class="text-success">Cita Agendada Correctamente</h3>
+  <p><strong>Barbero:</strong> {{ getNombreBarbero() }}</p>
+  <p><strong>Servicio:</strong> {{ getNombreServicio() }}</p>
+  <p><strong>Sucursal:</strong> {{ getNombreSucursal() }}</p>
+  <p><strong>Fecha Inicio:</strong> {{ reservaData?.fecha_inicio | date:'short' }}</p>
+  <p><strong>Fecha Fin:</strong> {{ reservaData?.fecha_fin | date:'short' }}</p>
+  <p><strong>Notas:</strong> {{ reservaData?.notas || 'Ninguna' }}</p>
+</div>
 
-    <!-- Información de la cita agendada -->
-    <div *ngIf="formSubmitted" class="alert alert-success">
-      <h3>Cita Agendada Correctamente</h3>
-      <p>Tienda: {{ reservaData?.tienda }}</p>
-      <p>Barbero: {{ reservaData?.barbero }}</p>
-      <p>Servicio: {{ reservaData?.servicio }}</p>
-      <p>Fecha: {{ reservaData?.fecha }}</p>
-    </div>
+      <!-- Mapa (columna a la derecha) -->
+      <div class="col-md-4">
+        <div class="mb-3 mt-4">
+          <label for="tienda" class="form-label" style="color: #fdfdfd;">Men’s Barbershop</label>
+          <select class="form-control rounded-3" id="tienda" name="tienda" ngModel (change)="cambiarTienda($event)" required style="background-color: #343a40; color: #fdfdfd; border: 1px solid #fdfdfd;">
+            <option value="">Seleccione una tienda</option>
+            <option *ngFor="let tienda of tiendas" [value]="tienda.nombre">{{ tienda.nombre }}</option>
+          </select>
+          <!-- Botón Agendar Nueva (fuera de la condición formSubmitted para siempre mostrarlo) -->
+<div class="text-center mt-3">
+  <button (click)="resetForm()" class="btn btn-primary w-100 rounded-3" style="background-color: #ffc107; border-color: #ffc107;">
+    Agendar Nueva
+  </button>
+</div>
 
-    <!-- Botón para agendar nueva cita -->
-    <button (click)="resetForm()" class="btn btn-primary" style="background-color: #ffc107; border-color: #ffc107;">
-      Agendar Nueva
-    </button>
-  </div>
+        </div>
 
-  <!-- Mapa con estilo Bootstrap -->
-  <div class="row w-100 mt-4">
-    <div class="col-12">
-      <div id="mapa" class="w-100" style="height: 180px; border-radius: 10px;"></div>
+        <!-- Mapa -->
+        <div class="row w-100 mt-4">
+          <div class="col-12">
+            <div id="mapa" class="w-100" style="height: 200px; border-radius: 10px;"></div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
