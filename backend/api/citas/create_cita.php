@@ -1,6 +1,8 @@
 <?php
-include '../cors.php';
-include '../conexion.php';
+include '../includes.php';
+//include '../cors.php';
+//include '../conexion.php';
+
 
 // Verificar que se reciban los datos de la cita
 $data = json_decode(file_get_contents('php://input'), true);

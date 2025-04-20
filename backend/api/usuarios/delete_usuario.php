@@ -1,6 +1,7 @@
 <?php
-include '../cors.php';
-include '../conexion.php';
+include '../includes.php';
+//include '../cors.php';
+//include '../conexion.php';
 
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 

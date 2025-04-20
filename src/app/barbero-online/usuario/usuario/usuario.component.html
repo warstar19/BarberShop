@@ -11,6 +11,8 @@
         <a *ngIf="isRouteAvailable('servicios')" routerLink="servicios" class="list-group-item list-group-item-action bg-dark text-white hover-bg-yellow">Servicios y Precios</a>
         <a *ngIf="isRouteAvailable('galeria')" routerLink="galeria" class="list-group-item list-group-item-action bg-dark text-white hover-bg-yellow">Galería de Trabajos</a>
         <a *ngIf="isRouteAvailable('soporte')" routerLink="soporte" class="list-group-item list-group-item-action bg-dark text-white hover-bg-yellow">Centro de Ayuda</a>
+        <button type="button" (click)="logout()" class="list-group-item list-group-item-action bg-dark text-white hover-bg-yellow text-start w-100">
+          Salir <i class="bi bi-box-arrow-right ms-1"></i> </button>
       </div>
     </div>
 

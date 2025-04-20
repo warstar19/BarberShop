@@ -1,6 +1,7 @@
 <?php
-include __DIR__ . '/../cors.php';  // Incluir manejo de CORS (si lo necesitas)
-include __DIR__ . '/../conexion.php';  // Incluir la conexión a la base de datos
+include '../includes.php';
+//include '../cors.php';
+//include '../conexion.php';
 
 $whereClauses = [];
 $params = [];

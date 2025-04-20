@@ -85,7 +85,7 @@ export class CalendarioComponent implements OnInit {
   }
 
   loadEvents(): void {
-    this.http.get<any[]>('http://localhost/barberia/backend/api/citas/read_cita.php').subscribe(
+    this.http.get<any[]>('http://localhost/barberia/backend/api/citas/read_cita.php', {withCredentials:true}).subscribe(
       (data) => {
         this.events = data.map(cita => {
           const fechaInicio = new Date(cita.fecha_inicio);

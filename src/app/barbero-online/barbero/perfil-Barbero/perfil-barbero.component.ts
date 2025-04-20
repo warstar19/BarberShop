@@ -55,7 +55,7 @@ export class PerfilBarberoComponent implements OnInit {
   loadBarberoProfile(): void {
     this.isLoading = true;
 
-    this.http.get('http://localhost/barberia/backend/api/usuarios/read_usuario.php').subscribe(
+    this.http.get('http://localhost/barberia/backend/api/usuarios/read_usuario.php',{withCredentials:true}).subscribe(
       (data: any) => {
         this.isLoading = false;
         if (data) {

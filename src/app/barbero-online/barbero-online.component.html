@@ -1,56 +1,235 @@
-<body class="d-flex justify-content-center align-items-center vh-100" style="background-color: #212529;">
-  <div class="card shadow-lg border-0 rounded-4" style="width: 100%; max-width: 400px; background-color: #212529;">
+<body
+  class="d-flex justify-content-center align-items-center vh-100"
+  style="background-color: #212529"
+>
+  <div
+    class="card shadow-lg border-0 rounded-4"
+    style="width: 100%; max-width: 400px; background-color: #212529"
+  >
     <div class="card-body p-4" [ngClass]="{ 'fade-in': fadeIn }">
-      <h2 class="text-center mb-4 fw-bold" style="color: #ffc107;">
-        {{ isLoginMode ? 'Iniciar Sesión' : 'Registro' }}
+      <h2 class="text-center mb-4 fw-bold" style="color: #ffc107">
+        {{ isLoginMode ? "Iniciar Sesión" : "Registro" }}
       </h2>
 
-      <!-- Mostrar mensaje de registro exitoso -->
-      <div *ngIf="isRegistered" class="alert alert-success text-center" style="color: #fdfdfd;">
-        Usuario registrado correctamente
+      <div *ngIf="successMessage" class="alert alert-success text-center">
+        {{ successMessage }}
+      </div>
+      <div *ngIf="errorMessage" class="alert alert-danger text-center">
+        {{ errorMessage }}
       </div>
 
-      <form (ngSubmit)="onSubmit()">
-        <div class="mb-3">
-          <label for="username" class="form-label" style="color: #fdfdfd;">Usuario:</label>
-          <input type="text" class="form-control rounded-3" id="username" name="username" [(ngModel)]="username" placeholder="Ingresa tu usuario" required style="background-color: #343a40; color: #fdfdfd; border: 1px solid #fdfdfd;">
-        </div>
-
-        <!-- Campo adicional para registro -->
+      <form #form="ngForm" (ngSubmit)="onSubmit()">
         <div *ngIf="!isLoginMode" class="mb-3">
-          <label for="email" class="form-label" style="color: #fdfdfd;">Correo Electrónico:</label>
-          <input type="email" class="form-control rounded-3" id="email" name="email" [(ngModel)]="email" placeholder="Ingresa tu correo" required style="background-color: #343a40; color: #fdfdfd; border: 1px solid #fdfdfd;">
-        </div>
-
-        <div class="mb-3">
-          <label for="password" class="form-label" style="color: #fdfdfd;">Contraseña:</label>
-          <input type="password" class="form-control rounded-3" id="password" name="password" [(ngModel)]="password" placeholder="Ingresa tu contraseña" required style="background-color: #343a40; color: #fdfdfd; border: 1px solid #fdfdfd;">
-        </div>
-
-        <!-- Confirmación de contraseña en el registro -->
-        <div *ngIf="!isLoginMode" class="mb-3">
-          <label for="confirmPassword" class="form-label" style="color: #fdfdfd;">Confirmar Contraseña:</label>
-          <input type="password" class="form-control rounded-3" id="confirmPassword" name="confirmPassword" [(ngModel)]="confirmPassword" placeholder="Confirma tu contraseña" required style="background-color: #343a40; color: #fdfdfd; border: 1px solid #fdfdfd;">
-        </div>
-
-        <div *ngIf="isLoginMode" class="d-flex justify-content-between align-items-center mb-3">
-          <div class="form-check" style="color: #fdfdfd;">
-            <input type="checkbox" class="form-check-input" name="remember" id="remember">
-            <label class="form-check-label" for="remember" style="color: #fdfdfd;">Recordar</label>
+          <label for="username" class="form-label" style="color: #fdfdfd"
+            >Usuario:</label
+          >
+          <input
+            type="text"
+            class="form-control rounded-3"
+            id="username"
+            name="username"
+            [(ngModel)]="username"
+            placeholder="Ingresa tu usuario"
+            required
+            #usernameInput="ngModel"
+            style="
+              background-color: #343a40;
+              color: #fdfdfd;
+              border: 1px solid #fdfdfd;
+            "
+          />
+          <div
+            *ngIf="
+              !isLoginMode &&
+              usernameInput.invalid &&
+              (usernameInput.dirty || usernameInput.touched)
+            "
+            class="text-danger mt-1"
+            style="font-size: 0.8em"
+          >
+            <small *ngIf="usernameInput.errors?.['required']"
+              >El usuario es requerido.</small
+            >
           </div>
-          <a href="#" class="text-decoration-none" style="color: #ffc107;">¿Olvidaste tu contraseña?</a>
         </div>
 
-        <button type="submit" class="btn btn-primary w-100 rounded-3" style="background-color: #ffc107; border-color: #ffc107;">
-          {{ isLoginMode ? 'Ingresar' : 'Registrarse' }}
+        <div class="mb-3">
+          <label for="email" class="form-label" style="color: #fdfdfd">
+            {{ isLoginMode ? "Correo Electrónico:" : "Correo Electrónico:" }}
+          </label>
+          <input
+            type="email"
+            class="form-control rounded-3"
+            id="email"
+            name="email"
+            [(ngModel)]="email"
+            placeholder="Ingresa tu correo"
+            required
+            email
+            #emailInput="ngModel"
+            style="
+              background-color: #343a40;
+              color: #fdfdfd;
+              border: 1px solid #fdfdfd;
+            "
+          />
+          <div
+            *ngIf="
+              emailInput.invalid && (emailInput.dirty || emailInput.touched)
+            "
+            class="text-danger mt-1"
+            style="font-size: 0.8em"
+          >
+            <small *ngIf="emailInput.errors?.['required']"
+              >El correo es requerido.</small
+            >
+            <small *ngIf="emailInput.errors?.['email']"
+              >Ingrese un correo válido.</small
+            >
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="password" class="form-label" style="color: #fdfdfd"
+            >Contraseña:</label
+          >
+          <input
+            type="password"
+            class="form-control rounded-3"
+            id="password"
+            name="password"
+            [(ngModel)]="password"
+            placeholder="Ingresa tu contraseña"
+            required
+            minlength="6"
+            #passwordInput="ngModel"
+            style="
+              background-color: #343a40;
+              color: #fdfdfd;
+              border: 1px solid #fdfdfd;
+            "
+          />
+          <div
+            *ngIf="
+              passwordInput.invalid &&
+              (passwordInput.dirty || passwordInput.touched)
+            "
+            class="text-danger mt-1"
+            style="font-size: 0.8em"
+          >
+            <small *ngIf="passwordInput.errors?.['required']"
+              >La contraseña es requerida.</small
+            >
+            <small *ngIf="passwordInput.errors?.['minlength']"
+              >Debe tener al menos 6 caracteres.</small
+            >
+          </div>
+        </div>
+
+        <div *ngIf="!isLoginMode" class="mb-3">
+          <label for="confirmPassword" class="form-label" style="color: #fdfdfd"
+            >Confirmar Contraseña:</label
+          >
+          <input
+            type="password"
+            class="form-control rounded-3"
+            id="confirmPassword"
+            name="confirmPassword"
+            [(ngModel)]="confirmPassword"
+            placeholder="Confirma tu contraseña"
+            required
+            #confirmPasswordInput="ngModel"
+            style="
+              background-color: #343a40;
+              color: #fdfdfd;
+              border: 1px solid #fdfdfd;
+            "
+          />
+          <div
+            *ngIf="
+              !isLoginMode &&
+              confirmPasswordInput.invalid &&
+              (confirmPasswordInput.dirty || confirmPasswordInput.touched)
+            "
+            class="text-danger mt-1"
+            style="font-size: 0.8em"
+          >
+            <small *ngIf="confirmPasswordInput.errors?.['required']"
+              >Confirme la contraseña.</small
+            >
+          </div>
+          <div
+            *ngIf="
+              !isLoginMode &&
+              password !== confirmPassword &&
+              confirmPasswordInput.touched
+            "
+            class="text-danger mt-1"
+            style="font-size: 0.8em"
+          >
+            <small>Las contraseñas no coinciden.</small>
+          </div>
+        </div>
+
+        <div
+          *ngIf="isLoginMode"
+          class="d-flex justify-content-between align-items-center mb-3"
+        >
+          <div class="form-check" style="color: #fdfdfd">
+            <input
+              type="checkbox"
+              class="form-check-input"
+              name="remember"
+              id="remember"
+              disabled
+            />
+            <label
+              class="form-check-label"
+              for="remember"
+              style="color: #fdfdfd"
+              >Recordar</label
+            >
+          </div>
+          <a
+            href="#"
+            class="text-decoration-none"
+            style="color: #ffc107"
+            title="Funcionalidad no implementada"
+            >¿Olvidaste tu contraseña?</a
+          >
+        </div>
+
+        <button
+          type="submit"
+          class="btn btn-primary w-100 rounded-3"
+          style="background-color: #ffc107; border-color: #ffc107"
+          [disabled]="!form.valid || isLoading"
+        >
+          <span *ngIf="!isLoading">{{
+            isLoginMode ? "Ingresar" : "Registrarse"
+          }}</span>
+          <span
+            *ngIf="isLoading"
+            class="spinner-border spinner-border-sm"
+            role="status"
+            aria-hidden="true"
+          ></span>
+          <span *ngIf="isLoading">
+            {{ isLoginMode ? " Ingresando..." : " Registrando..." }}</span
+          >
         </button>
       </form>
 
       <div class="mt-4 text-center">
-        <p style="color: #fdfdfd;">
-          {{ isLoginMode ? '¿No tienes cuenta?' : '¿Ya tienes cuenta?' }}
-          <a href="#" (click)="toggleMode($event)" class="text-decoration-none" style="color: #ffc107;">
-            {{ isLoginMode ? 'Regístrate' : 'Inicia sesión' }}
+        <p style="color: #fdfdfd">
+          {{ isLoginMode ? "¿No tienes cuenta?" : "¿Ya tienes cuenta?" }}
+          <a
+            href="#"
+            (click)="toggleMode($event)"
+            class="text-decoration-none"
+            style="color: #ffc107"
+          >
+            {{ isLoginMode ? "Regístrate" : "Inicia sesión" }}
           </a>
         </p>
       </div>

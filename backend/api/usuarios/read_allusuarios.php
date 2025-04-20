@@ -1,6 +1,7 @@
 <?php
-include __DIR__ . '/../cors.php';
-include __DIR__ . '/../conexion.php';
+include '../includes.php';
+//include '../cors.php';
+include '../conexion.php';
 
 $whereClauses = [];
 $params = [];

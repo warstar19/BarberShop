@@ -22,6 +22,7 @@ import { BarberoComponent } from './barbero-online/barbero/barbero/barbero.compo
 import { PerfilBarberoComponent } from './barbero-online/barbero/perfil-Barbero/perfil-barbero.component';
 import { CitasDelDiaComponent } from './barbero-online/barbero/citas-del-dia/citas-del-dia.component';
 import { HistorialBarberoComponent } from './barbero-online/barbero/historial-Barbero/historial-Barberos.component';
+import { GestionCitasBarberoComponent } from './barbero-online/barbero/gestion-citas-barbero/gestion-citas-barbero.component';
 
 // Importamos los componentes de Admin y sus subcomponentes
 import { AdminComponent } from './barbero-online/admin/admin/admin.component';
@@ -30,6 +31,9 @@ import { GestionUsuariosComponent } from './barbero-online/admin/gestion-usuario
 import { GestionCitasComponent } from './barbero-online/admin/gestion-citas/gestion-citas.component';
 import { CalendarioComponent } from './barbero-online/admin/calendario/calendario.component';
 import { HistorialFinancieroComponent } from './barbero-online/admin/historial-financiero/historial-financiero.component';
+// Importa el guard
+import { AuthGuard } from './auth.guard'; //Este guard se usa en la configuración de rutas para protegerlas. 
+// Verifica si el usuario está logueado y si tiene el rol necesario (definido en la data de la ruta).
 
 export const routes: Routes = [
   { path: 'inicio', component: InicioComponent },
@@ -38,11 +42,15 @@ export const routes: Routes = [
   { path: 'sucursales', component: SucursalesComponent },
   { path: 'contacto', component: ContactoComponent },
   { path: 'barbero-online', component: BarberoOnlineComponent },
-
+   // --- Ruta de Login/Registro ---
+  // Apunta al componente que tiene el HTML/TS del login/registro
+  { path: 'login', component: BarberoOnlineComponent },
   // Ruta de 'usuario' con subrutas hijas, accesible solo a través de un enlace dentro de la aplicación
   {
     path: 'usuario',
     component: UsuarioComponent,
+    canActivate: [AuthGuard],
+    data: {roles:['cliente']},
     children: [
       { path: 'reserva', component: ReservaComponent },
       { path: 'historial', component: HistorialComponent },
@@ -59,11 +67,14 @@ export const routes: Routes = [
   {
     path: 'barbero',
     component: BarberoComponent,
+    canActivate: [AuthGuard],      
+    data: { roles: ['barbero'] },
     children: [
       { path: 'perfil', component: PerfilBarberoComponent },
       { path: 'citas-del-dia', component: CitasDelDiaComponent },
       { path: 'historial', component: HistorialBarberoComponent },
-      { path: '', redirectTo: 'citas-del-dia', pathMatch: 'full' }  // Ruta por defecto dentro de BarberoComponent
+      { path: '', redirectTo: 'citas-del-dia', pathMatch: 'full' },  // Ruta por defecto dentro de BarberoComponent
+      { path: 'gestion-citas-barbero', component: GestionCitasBarberoComponent },
     ]
   },
 
@@ -71,6 +82,8 @@ export const routes: Routes = [
   {
     path: 'admin',
     component: AdminComponent,
+    canActivate: [AuthGuard],       
+    data: { roles: ['admin'] },
     children: [
       { path: 'perfil', component: PerfilAdminComponent },
       { path: 'gestion-usuarios', component: GestionUsuariosComponent },

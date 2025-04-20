@@ -5,8 +5,11 @@
       <h4 class="text-center mb-4">Panel de Barbero</h4>
       <div class="list-group">
         <a *ngIf="isRouteAvailable('perfil')" routerLink="perfil" class="list-group-item list-group-item-action bg-dark text-white hover-bg-yellow">Perfil</a>
-        <a *ngIf="isRouteAvailable('citas-del-dia')" routerLink="citas-del-dia" class="list-group-item list-group-item-action bg-dark text-white hover-bg-yellow">Citas del Día</a>
+        <a *ngIf="isRouteAvailable('gestion-citas-barbero')" routerLink="gestion-citas-barbero" class="list-group-item list-group-item-action bg-dark text-white hover-bg-yellow">Gestión de Citas</a>
+        <a *ngIf="isRouteAvailable('citas-del-dia')" routerLink="citas-del-dia" class="list-group-item list-group-item-action bg-dark text-white hover-bg-yellow">Calendario de Citas</a>
         <a *ngIf="isRouteAvailable('historial')" routerLink="historial" class="list-group-item list-group-item-action bg-dark text-white hover-bg-yellow">Historial</a>
+        <button type="button" (click)="logout()" class="list-group-item list-group-item-action bg-dark text-white hover-bg-yellow text-start w-100">
+          Salir <i class="bi bi-box-arrow-right ms-1"></i> </button>        
       </div>
     </div>
 

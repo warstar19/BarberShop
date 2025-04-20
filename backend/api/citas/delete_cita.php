@@ -1,6 +1,7 @@
 <?php
-include '../cors.php';
-include '../conexion.php';
+include '../includes.php';
+//include '../cors.php';
+//include '../conexion.php';
 
 // Obtener los datos enviados desde el frontend
 $data = json_decode(file_get_contents("php://input"));

@@ -9,6 +9,8 @@
         <a *ngIf="isRouteAvailable('gestion-citas')" routerLink="gestion-citas" class="list-group-item list-group-item-action bg-dark text-white hover-bg-yellow">Gestión de Citas</a>
         <a *ngIf="isRouteAvailable('calendario')" routerLink="calendario" class="list-group-item list-group-item-action bg-dark text-white hover-bg-yellow">Calendario</a>
         <a *ngIf="isRouteAvailable('historial-financiero')" routerLink="historial-financiero" class="list-group-item list-group-item-action bg-dark text-white hover-bg-yellow">Historial Financiero</a>
+        <button type="button" (click)="logout()" class="list-group-item list-group-item-action bg-dark text-white hover-bg-yellow text-start w-100">
+          Salir <i class="bi bi-box-arrow-right ms-1"></i> </button>
       </div>
     </div>
 

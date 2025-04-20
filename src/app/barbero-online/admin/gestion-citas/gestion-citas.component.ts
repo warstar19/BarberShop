@@ -107,7 +107,8 @@ export class GestionCitasComponent implements OnInit {
   }
 
   loadCitas(): void {
-    this.http.get<any[]>(`${this.baseUrl}/citas/read_cita.php`).pipe(
+    console.log(`GESTION-CITAS: Intentando llamar a ${this.baseUrl}/citas/read_cita.php`);
+    this.http.get<any[]>(`${this.baseUrl}/citas/read_cita.php`, {withCredentials:true}).pipe(
       catchError(error => {
         this.handleApiError(error);
         return of([]);

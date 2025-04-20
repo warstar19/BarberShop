@@ -1,0 +1,289 @@
+<div
+  class="gestion-citas-lista container-fluid bg-dark text-warning min-vh-100 py-5 px-4"
+  style="font-family: 'Segoe UI', sans-serif"
+>
+  <h2 class="mb-5 text-center fw-bold display-6">📅 Gestión de Citas</h2>
+
+  <!-- Mostrar el listado de citas si no hay formularios activos -->
+  <div
+    *ngIf="
+      !mostrarFormularioNuevaCita && !mostrarFormularioReprogramar;
+      else mostrarFormularios
+    "
+  >
+    <div class="text-end mb-3">
+      <button class="btn btn-success" (click)="agregarCita()">
+        <i class="bi bi-plus-circle"></i> Agregar nueva cita
+      </button>
+    </div>
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+      <div *ngFor="let cita of events" class="col">
+        <div
+          class="card bg-transparent text-warning border border-warning shadow-lg h-100"
+        >
+          <div class="card-body">
+            <h5 class="card-title fw-semibold fs-5 text-warning mb-3">
+              <i class="bi bi-scissors me-2"></i
+              >{{ cita.servicio_nombre || "Servicio no disponible" }}
+            </h5>
+            <p class="card-text mb-2 fs-6">
+              <strong><i class="bi bi-person-fill me-2"></i>Cliente:</strong>
+              {{ cita.cliente_nombre || "No disponible" }}
+            </p>
+            <p class="card-text mb-2 fs-6">
+              <strong><i class="bi bi-person-gear me-2"></i>Barbero:</strong>
+              {{ cita.barbero_nombre || "No disponible" }}
+            </p>
+            <p class="card-text mb-2 fs-6">
+              <strong><i class="bi bi-calendar-date me-2"></i>Fecha:</strong>
+              {{ cita.fecha_inicio | date : "fullDate" }}
+            </p>
+            <p class="card-text mb-2 fs-6">
+              <strong><i class="bi bi-clock me-2"></i>Hora:</strong>
+              {{ cita.fecha_inicio | date : "shortTime" }} -
+              {{ cita.fecha_fin | date : "shortTime" }}
+            </p>
+            <p class="card-text mb-3 fs-6">
+              <strong><i class="bi bi-info-circle me-2"></i>Estado:</strong>
+              <span
+                class="badge fs-6 px-3 py-1"
+                [ngClass]="{
+                  'bg-success': cita.estado === 'confirmada',
+                  'bg-warning text-dark': cita.estado === 'pendiente',
+                  'bg-danger': cita.estado === 'cancelada',
+                  'bg-secondary': cita.estado === 'completada'
+                }"
+              >
+                {{ cita.estado }}
+              </span>
+            </p>
+            <p class="card-text mb-2 fs-6">
+              <strong><i class="bi bi-card-list me-2"></i>Notas:</strong>
+              {{ cita.notas }}
+            </p>
+            <div
+              class="d-flex justify-content-end gap-2"
+              *ngIf="
+                cita.estado === 'pendiente' || cita.estado === 'confirmada'
+              "
+            >
+              <!--<button
+                *ngIf="cita.estado === 'pendiente'"
+                class="btn btn-sm btn-outline-warning fw-semibold"
+                (click)="confirmCita(cita)"
+              >
+                <i class="bi bi-check-circle me-1"></i> Confirmar
+              </button>
+              <button
+                class="btn btn-sm btn-outline-danger fw-semibold"
+                (click)="cancelCita(cita)"
+              >
+                <i class="bi bi-x-circle me-1"></i>
+                {{ cita.estado === "pendiente" ? "Rechazar" : "Cancelar" }}
+              </button>
+              <button
+                class="btn btn-sm btn-outline-info fw-semibold"
+                (click)="rescheduleCita(cita)"
+              >
+                <i class="bi bi-calendar-event me-1"></i> Reprogramar
+              </button>-->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mostrar formularios dependiendo de las condiciones -->
+  <ng-template #mostrarFormularios>
+    <ng-container
+      *ngIf="mostrarFormularioNuevaCita"
+      [ngTemplateOutlet]="formularioNuevaCita"
+    ></ng-container>
+    <ng-container
+      *ngIf="mostrarFormularioReprogramar && citaAReprogramar"
+      [ngTemplateOutlet]="formularioReprogramar"
+    ></ng-container>
+  </ng-template>
+
+  <!-- Formulario de Nueva Cita -->
+  <ng-template #formularioNuevaCita>
+    <div
+      class="card bg-transparent text-warning border border-warning shadow-lg mt-5"
+    >
+      <div class="card-header bg-secondary text-warning">
+        <h5 class="card-title fw-semibold">Nueva Cita</h5>
+      </div>
+      <div class="card-body">
+        <form (ngSubmit)="guardarNuevaCita()">
+          <div class="mb-3">
+            <label for="cliente_id" class="form-label">Cliente</label>
+            <select
+              class="form-select bg-dark text-warning"
+              id="cliente_id"
+              name="cliente_id"
+              [(ngModel)]="nuevaCita.cliente_id"
+              required
+            >
+              <option [ngValue]="0" disabled>Seleccionar Cliente</option>
+              <option *ngFor="let cliente of clientes" [ngValue]="cliente.id">
+                {{ cliente.username }}
+              </option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="barbero_id" class="form-label">Barbero</label>
+            <select
+              class="form-select bg-dark text-warning"
+              id="barbero_id"
+              name="barbero_id"
+              [(ngModel)]="nuevaCita.barbero_id"
+              required
+            >
+              <option [ngValue]="0" disabled>Seleccionar Barbero</option>
+              <option *ngFor="let barbero of barberos" [ngValue]="barbero.id">
+                {{ barbero.username }}
+              </option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="sucursal_id" class="form-label">Sucursal</label>
+            <select
+              class="form-select bg-dark text-warning"
+              id="sucursal_id"
+              name="sucursal_id"
+              [(ngModel)]="nuevaCita.sucursal_id"
+              (change)="cargarServiciosPorSucursal(nuevaCita.sucursal_id)"
+              required
+            >
+              <option [ngValue]="0" disabled>Seleccionar Sucursal</option>
+              <option
+                *ngFor="let sucursal of sucursales"
+                [ngValue]="sucursal.id"
+              >
+                {{ sucursal.nombre }}
+              </option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="servicio_id" class="form-label">Servicio</label>
+            <select
+              class="form-select bg-dark text-warning"
+              id="servicio_id"
+              name="servicio_id"
+              [(ngModel)]="nuevaCita.servicio_id"
+              required
+            >
+              <option [ngValue]="0" disabled>Seleccionar Servicio</option>
+              <option
+                *ngFor="let servicio of servicios"
+                [ngValue]="servicio.id"
+              >
+                {{ servicio.nombre }}
+              </option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="fecha_inicio" class="form-label"
+              >Fecha y Hora de Inicio</label
+            >
+            <input
+              type="datetime-local"
+              class="form-control bg-dark text-warning"
+              id="fecha_inicio"
+              name="fecha_inicio"
+              [(ngModel)]="nuevaCita.fecha_inicio"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="fecha_fin" class="form-label"
+              >Fecha y Hora de Fin</label
+            >
+            <input
+              type="datetime-local"
+              class="form-control bg-dark text-warning"
+              id="fecha_fin"
+              name="fecha_fin"
+              [(ngModel)]="nuevaCita.fecha_fin"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="notas" class="form-label">Notas</label>
+            <textarea
+              class="form-control bg-dark text-warning"
+              id="notas"
+              name="notas"
+              [(ngModel)]="nuevaCita.notas"
+              placeholder="Agregar nota"
+            ></textarea>
+          </div>
+          <div class="text-end">
+            <button
+              type="button"
+              class="btn btn-outline-danger me-2"
+              (click)="cancelarNuevaCita()"
+            >
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-success">Guardar Cita</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </ng-template>
+
+  <!-- Formulario de Reprogramación de Cita -->
+  <ng-template #formularioReprogramar>
+    <div
+      class="card bg-transparent text-warning border border-warning shadow-lg mt-5"
+    >
+      <div class="card-header bg-info text-dark">
+        <h5 class="card-title fw-semibold">Reprogramar Cita</h5>
+      </div>
+      <div class="card-body">
+        <form (ngSubmit)="guardarReprogramacion()">
+          <div class="mb-3">
+            <label for="fecha_inicio" class="form-label"
+              >Nueva Fecha y Hora de Inicio</label
+            >
+            <input
+              type="datetime-local"
+              class="form-control bg-dark text-warning"
+              id="fecha_inicio"
+              name="fecha_inicio"
+              [(ngModel)]="nuevaFechaInicioReprogramar"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="fecha_fin" class="form-label"
+              >Nueva Fecha y Hora de Fin</label
+            >
+            <input
+              type="datetime-local"
+              class="form-control bg-dark text-warning"
+              id="fecha_fin"
+              name="fecha_fin"
+              [(ngModel)]="nuevaFechaFinReprogramar"
+              required
+            />
+          </div>
+          <div class="text-end">
+            <button
+              type="button"
+              class="btn btn-outline-danger me-2"
+              (click)="cancelarReprogramacion()"
+            >
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-info text-dark">
+              Guardar Reprogramación
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </ng-template>
+</div>
