@@ -1,8 +1,29 @@
 <?php
 include '../includes.php';
 //include '../cors.php';
-include '../conexion.php';
+// include '../conexion.php';
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
+if ($_SERVER['REQUEST_METHOD'] != 'GET') {
+    http_response_code(405); header('Content-Type: application/json; charset=UTF-8');
+    echo json_encode(["error" => "Método no permitido. Use GET."]); $conn = null; exit();
+}
+
+// --- SECCIÓN PROTEGIDA ---
+
+// 4. Verificar Autenticación (Login)
+if (!isset($_SESSION['user_id'])) {
+    http_response_code(401); header('Content-Type: application/json; charset=UTF-8');
+    echo json_encode(["error" => "Acceso no autorizado. Inicie sesión."]); $conn = null; exit();
+}
+
+// 5. Verificar Autorización (Rol Admin)
+if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
+    http_response_code(403); header('Content-Type: application/json; charset=UTF-8');
+    echo json_encode(["error" => "Permiso denegado. Se requiere rol de administrador."]); $conn = null; exit();
+}
 $whereClauses = [];
 $params = [];
 

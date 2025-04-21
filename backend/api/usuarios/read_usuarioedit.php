@@ -1,64 +1,52 @@
 <?php
-include '../includes.php';
-//include '../cors.php';
-//include '../conexion.php';
 
-$whereClauses = [];
-$params = [];
+include '../includes.php'; // Conexión $conn y CORS
 
-// Filtrar por id (obtenido dinámicamente a través de los parámetros de la consulta)
-if (isset($_GET['id'])) {
-    $whereClauses[] = "id = :id";
-    $params[':id'] = $_GET['id'];
-} else {
-    echo json_encode(["mensaje" => "ID no proporcionado."]);
-    exit();
+
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
+
+// CORS/OPTIONS ya manejado en includes.php/cors.php
+
+// Verificar Método GET
+if ($_SERVER['REQUEST_METHOD'] != 'GET') { /* ... error 405 ... */ }
+
+// Verificar Autenticación y Rol Admin
+if (!isset($_SESSION['user_id'])) { /* ... error 401 ... */ }
+if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') { /* ... error 403 ... */ }
+
+// --- Lógica para Leer UN Usuario ---
+
+// Validar ID
+if (!isset($_GET['id']) || !filter_var($_GET['id'], FILTER_VALIDATE_INT)) {
+    http_response_code(400); header('Content-Type: application/json; charset=UTF-8');
+    echo json_encode(["error" => "ID de usuario inválido o no proporcionado."]); $conn = null; exit();
 }
+$userIdToEdit = intval($_GET['id']);
 
-// Filtrado por username (opcional)
-if (isset($_GET['username'])) {
-    $whereClauses[] = "username LIKE :username";
-    $params[':username'] = '%' . $_GET['username'] . '%';
-}
-
-// Filtrado por email (opcional)
-if (isset($_GET['email'])) {
-    $whereClauses[] = "email = :email";
-    $params[':email'] = $_GET['email'];
-}
-
-// Filtrado por rol (opcional)
-if (isset($_GET['rol'])) {
-    $whereClauses[] = "rol = :rol";
-    $params[':rol'] = $_GET['rol'];
-}
-
-// Filtrado por estado (opcional)
-if (isset($_GET['estado'])) {
-    $whereClauses[] = "estado = :estado";
-    $params[':estado'] = $_GET['estado'];
-}
-
-$sql = "SELECT * FROM usuarios";
-
-if (!empty($whereClauses)) {
-    $sql .= " WHERE " . implode(" AND ", $whereClauses);
-}
+// Consulta para obtener los datos necesarios para el formulario
+// ¡AJUSTA COLUMNAS! No incluir password_hash aquí.
+$sql = "SELECT id, username, email, telefono, rol, estado, token /* <-- Incluye token si lo usas en el form */
+        FROM usuarios WHERE id = :id";
 
 try {
     $stmt = $conn->prepare($sql);
-    $stmt->execute($params);
-    $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $stmt->bindParam(':id', $userIdToEdit, PDO::PARAM_INT);
+    $stmt->execute();
+    $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // Si encontramos algún usuario, lo devolvemos
-    if (!empty($usuarios)) {
-        echo json_encode($usuarios[0]); // Devuelve el primer usuario encontrado
+     header('Content-Type: application/json; charset=UTF-8'); // Asegurar content type
+    if ($usuario) {
+        $usuario['id'] = intval($usuario['id']); // Asegurar ID numérico
+        echo json_encode($usuario);
     } else {
-        echo json_encode(["mensaje" => "Usuario no encontrado."]);
+        http_response_code(404); // Not Found
+        echo json_encode(["error" => "Usuario no encontrado."]);
     }
-} catch (PDOException $e) {
-    echo json_encode(["error" => $e->getMessage()]);
-}
 
-$conn = null;
+} catch (PDOException $e) {
+    /* ... manejo error 500 ... */
+} finally {
+    $conn = null;
+}
+exit();
 ?>

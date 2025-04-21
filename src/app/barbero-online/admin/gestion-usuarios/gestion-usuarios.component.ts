@@ -85,7 +85,7 @@ export class GestionUsuariosComponent implements OnInit {
     const queryString = new URLSearchParams(params).toString();
     const url = `http://localhost/barberia/backend/api/usuarios/read_allusuarios.php?${queryString}`;
 
-    this.http.get<any>(url).subscribe(
+    this.http.get<any>(url, {withCredentials:true}).subscribe(
       (data) => {
         if (data && data.mensaje) {
           this.noUsersMessage = data.mensaje;
@@ -119,7 +119,7 @@ export class GestionUsuariosComponent implements OnInit {
     const queryString = new URLSearchParams(params).toString();
     const url = `http://localhost/barberia/backend/api/usuarios/read_cambios.php?${queryString}`;
 
-    this.http.get<any[]>(url).subscribe(
+    this.http.get<any[]>(url, {withCredentials:true}).subscribe(
       (data) => {
         this.historyRecords = Array.isArray(data) ? data : [];
       },
@@ -181,7 +181,7 @@ export class GestionUsuariosComponent implements OnInit {
 
   createUser(): void {
     const url = 'http://localhost/barberia/backend/api/usuarios/add_usuario.php';  // Ruta para crear un usuario
-    this.http.post(url, { ...this.userForm, token: this.token }).subscribe(
+    this.http.post(url, { ...this.userForm, token: this.token }, {withCredentials:true}).subscribe(
       () => {
         this.loadUsuarios();
         this.closeModal();
@@ -196,7 +196,7 @@ export class GestionUsuariosComponent implements OnInit {
 
   updateUser(): void {
     const url = 'http://localhost/barberia/backend/api/usuarios/edit_usuario.php';  // Ruta para editar un usuario
-    this.http.put(url, { ...this.userForm, token: this.token }).subscribe(
+    this.http.put(url, { ...this.userForm, token: this.token }, {withCredentials:true}).subscribe(
       () => {
         this.loadUsuarios();
         this.closeModal();
@@ -211,7 +211,7 @@ export class GestionUsuariosComponent implements OnInit {
 
   toggleUserStatus(userId: number): void {
     const url = `http://localhost/barberia/backend/api/usuarios/delete_usuario.php?id=${userId}`;
-    this.http.get(url).subscribe(
+    this.http.get(url, {withCredentials:true}).subscribe(
       () => {
         this.loadUsuarios();
       },
@@ -241,21 +241,33 @@ export class GestionUsuariosComponent implements OnInit {
   }
 
   validateForm(): boolean {
-    const { username, email, password, confirmPassword } = this.userForm;
-    if (!username || !email || !password || !confirmPassword) {
-      alert('Por favor, complete todos los campos.');
+    // Mantenemos el objeto userForm que ya usas
+    const { username, email, password /*, confirmPassword */ } = this.userForm; // Comentamos confirmPassword aquí
+
+    // Modificamos la condición: Quitamos la comprobación de !confirmPassword
+    if (!username || !email || !password /* || !confirmPassword */) {
+      alert('Por favor, complete todos los campos requeridos (Usuario, Email, Contraseña).');
       return false;
     }
+
+    // ¡ADVERTENCIA! Al quitar la comprobación de confirmPassword de aquí arriba,
+    // también se elimina la siguiente comprobación de coincidencia.
+    // Se puede considerar añadir esta verificación de coincidencia dentro de createUser()
+    // DESPUÉS de añadir el campo HTML para confirmPassword.
+    /*
     if (password !== confirmPassword) {
       alert('Las contraseñas no coinciden.');
       return false;
     }
+    */
+
+    // Si llegamos aquí, los campos requeridos BÁSICOS (sin confirmación) están llenos
     return true;
   }
 
   getUserById(id: number): void {
     const url = `http://localhost/barberia/backend/api/usuarios/read_usuarioedit.php?id=${id}`;
-    this.http.get<any>(url).subscribe(
+    this.http.get<any>(url, {withCredentials:true}).subscribe(
       (data) => {
         if (data) {
           this.openModalEditUser(data); // Cargar los datos en el modal
