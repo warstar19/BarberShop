@@ -32,7 +32,17 @@ export class BarberoOnlineComponent implements OnInit {
   ngOnInit(): void {
     // Animación inicial
     setTimeout(() => (this.fadeIn = true), 100);
-        
+    setTimeout(() => {
+    const userRole = this.authService.getCurrentUserRole();
+    console.log('Rol actual detectado en ngOnInit:', userRole);
+    if (userRole) {
+      this.navigateToDashboard(userRole);
+    }
+  }, 200); // Espera un poco para la animación
+    
+  
+    // Si ya hay una sesión activa, redirigir automáticamente
+    
   }
 
   toggleMode(event: Event): void {

@@ -3,7 +3,7 @@
 // Incluye la configuración de cookies de sesión (ajusta ruta si es diferente)
 include 'includes/session_config.php';
 // Incluye TU conexión PDO (ajusta ruta si es diferente, aquí asume misma carpeta 'api')
-include 'conexion.php'; // ($conn ya está disponible)
+include 'includes.php'; // ($conn ya está disponible)
 
 // 2. Iniciar o reanudar la sesión (después de configurar cookies si aplica)
 if (session_status() === PHP_SESSION_NONE) {
@@ -18,6 +18,11 @@ header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: POST, OPTIONS"); // Métodos permitidos para ESTE endpoint
 header("Access-Control-Allow-Headers: Content-Type, X-Requested-With"); // Cabeceras que Angular puede enviar
 
+// Buscar si el usuario ya tiene una sesión activa
+if (isset($_SESSION['user_id'])) {
+    echo json_encode(['success' => false, 'message' => 'Ya hay una sesión activa.']);
+    exit;
+}
 // 4. Manejo de la petición Preflight OPTIONS
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     http_response_code(200); // Responde OK a la verificación previa del navegador

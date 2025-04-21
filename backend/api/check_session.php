@@ -1,21 +1,11 @@
 <?php
-// backend/api/check_session.php
+include "includes/session_config.php"; // Configuración de sesión
+// Cabeceras CORS
+include 'cors.php'; // Incluye el archivo de configuración CORS
 
-// Opcional: Incluir configuración de sesión si afecta cómo se leen/validan
-// require_once __DIR__ . '/includes/session_config.php';
-// NO necesitamos conexión a BD aquí, solo leemos la sesión
+session_start();
+   
 
-// Iniciar/Reanudar sesión para leer $_SESSION
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-// Cabeceras CORS (¡También necesarias aquí!)
-header("Access-Control-Allow-Origin: http://localhost:4200"); // URL Angular
-header("Access-Control-Allow-Credentials: true"); // Permitir cookie de sesión
-header("Content-Type: application/json; charset=UTF-8");
-header("Access-Control-Allow-Methods: GET, OPTIONS"); // Este endpoint usa GET
-header("Access-Control-Allow-Headers: Content-Type, X-Requested-With");
 
 // Manejo OPTIONS
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {

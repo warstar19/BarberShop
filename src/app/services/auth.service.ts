@@ -1,7 +1,7 @@
 // src/app/auth.service.ts (Versión para Sesiones PHP Nativas)
 
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of, throwError} from 'rxjs';
 import { tap, catchError, map, finalize } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http'; // Importa HttpClient
 
@@ -207,7 +207,7 @@ export class AuthService {
     return this.loggedIn.getValue();
   }
 }
-function throwError(arg0: () => Error): any {
-  throw new Error('Function not implemented.');
-}
+
+
+
 
